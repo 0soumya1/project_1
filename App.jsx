@@ -1,87 +1,126 @@
 import {View, Text, FlatList, TouchableOpacity} from 'react-native';
 import React, {useState, useEffect} from 'react';
-import {Button} from 'react-native-paper';
+import {SafeAreaProvider} from 'react-native-safe-area-context';
+import {Button, PaperProvider} from 'react-native-paper';
+import style from './style';
 
 const App = () => {
   const [cart, setCart] = useState([]);
+  const [total, setTotal] = useState([]);
 
   const itemList = [
-    {qty: 1, price: 10, name: 'pizza'},
-    {qty: 1, price: 10, name: 'dosa'},
-    {qty: 1, price: 10, name: 'burger'},
-    {qty: 1, price: 10, name: 'idli'},
-    {qty: 1, price: 10, name: 'momos'},
-    {qty: 1, price: 10, name: 'biryani'},
-    {qty: 1, price: 10, name: 'paneer'},
-    {qty: 1, price: 10, name: 'vada'},
-    {qty: 1, price: 10, name: 'pav'},
-    {qty: 1, price: 10, name: 'chai'},
+    {price: 70, name: 'pizza'},
+    {price: 30, name: 'dosa'},
+    {price: 40, name: 'burger'},
+    {price: 50, name: 'momos'},
+    {price: 60, name: 'biryani'},
+    {price: 20, name: 'paneer'},
   ];
   // console.log(itemList);
-
-  const handleAddToCart = item => {
-    // console.log(item, "item")
-    setCart([...cart, item]);
-  };
 
   useEffect(() => {
     console.log(cart, 'cart');
   }, [cart]);
 
-  return (
-    <View>
-      {itemList.length > 0 && (
-        <FlatList
-          data={itemList}
-          renderItem={({item}) => (
-            <View
-              style={{
-                display: 'flex',
-                flexDirection: 'row',
-                justifyContent: 'space-around',
-                alignItems: 'center',
-                padding: 1,
-                margin: 2,
-              }}>
-              <Text>{item?.name}</Text>
-              <Text>₹{item?.price}</Text>
-              <TouchableOpacity onPress={() => handleAddToCart(item)}>
-                <Text>Add</Text>
-              </TouchableOpacity>
-            </View>
-          )}
-        />
-      )}
+  // const handleAddToCart = item => {
+  //   // console.log(item, "item")
+  //   item.qty = 1;
+  //   item.amount = item.price;
+  //   setCart([...cart, item]);
+  //   handleTotal([...cart, item])
+  // };
 
-      <View style={{margin: '50px', padding: '50px'}}>
-        <Text>Cart:</Text>
-        <TouchableOpacity onPress={() => setCart([])}>
-          <Text>clear Cart:</Text>
-        </TouchableOpacity>
-      </View>
-      {cart.length > 0 && (
-        <FlatList
-          data={cart}
-          renderItem={({item}) => (
-            <View
-              style={{
-                display: 'flex',
-                flexDirection: 'row',
-                justifyContent: 'space-around',
-                alignItems: 'center',
-                padding: 1,
-                margin: 2,
-              }}>
-              <Text>{item.name}</Text>
-              <Text>{item.price}</Text>
-              {/* <TouchableOpacity onPress={() => setCart([...cart, item])}>
-                <Text>add</Text>
-              </TouchableOpacity> */}
+  const handleAddToCart = item => {
+    item.qty = 1;
+    item.amount = item.price;
+    if (cart.length == 0) {
+      setCart([item]);
+      handleTotal([...cart, item]);
+    } else {
+      let exist = cart.some(a => a.name == item.name);
+      if (!exist) {
+        setCart([...cart, item]);
+        handleTotal([...cart, item]);
+      }
+    }
+  };
+  
+  const handleQtyInc = i => {
+    let arr = [...cart];
+    arr[i].qty = arr[i].qty + 1;
+    arr[i].amount = arr[i].qty * arr[i].price;
+    handleTotal(arr);
+    setCart(arr);
+  };
+
+  const handleQtyDec = i => {
+    let arr = [...cart];
+    if (arr[i].qty > 1) {
+      arr[i].qty = arr[i].qty - 1;
+      arr[i].amount = arr[i].qty * arr[i].price;
+      handleTotal(arr);
+      setCart(arr);
+    }
+  };
+
+  const handleRemoveItem = i => {
+    let arr = [...cart];
+    arr.splice(i, 1);
+    handleTotal(arr);
+    setCart(arr);
+  };
+
+  const handleTotal = arr => {
+    let sum = 0;
+    arr.map(a => {
+      sum = sum + a.amount;
+    });
+    setTotal(sum);
+  };
+
+  return (
+    <SafeAreaProvider>
+      <PaperProvider>
+        <Text>ItemList</Text>
+
+        {itemList.length > 0 && (
+          <FlatList
+            data={itemList}
+            renderItem={({item}) => (
+              <View style={style.card}>
+                <Text>{item?.name}</Text>
+                <Text>₹{item?.price}</Text>
+                <Button onPress={() => handleAddToCart(item)}>Add</Button>
+              </View>
+            )}
+          />
+        )}
+        {cart.length > 0 && (
+          <>
+            <View style={style.card}>
+              <Text>Cart:</Text>
+              <Text>Total:{total}</Text>
+              <Button onPress={() => setCart([])}>Clear Cart</Button>
             </View>
-          )}
-        />
-      )}
-    </View>
+
+            <FlatList
+              data={cart}
+              renderItem={({item, index}) => (
+                <View style={style.card}>
+                  <Text>{item.name}</Text>
+                  <Text>qty: {item.qty}</Text>
+                  <Text>price: {item.price}</Text>
+
+                  <Button onPress={() => handleQtyInc(index)}>+</Button>
+                  <Button onPress={() => handleQtyDec(index)}>-</Button>
+                  <Button onPress={() => handleRemoveItem(index)}>X</Button>
+                </View>
+              )}
+            />
+          </>
+        )}
+      </PaperProvider>
+    </SafeAreaProvider>
   );
 };
 
