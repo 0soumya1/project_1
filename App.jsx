@@ -6,7 +6,7 @@ import style from './style';
 
 const App = () => {
   const [cart, setCart] = useState([]);
-  const [total, setTotal] = useState([]);
+  const [total, setTotal] = useState(0);
 
   const itemList = [
     {price: 70, name: 'pizza'},
@@ -44,7 +44,7 @@ const App = () => {
       }
     }
   };
-  
+
   const handleQtyInc = i => {
     let arr = [...cart];
     arr[i].qty = arr[i].qty + 1;
