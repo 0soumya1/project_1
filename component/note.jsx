@@ -1,4 +1,4 @@
-// CART
+// notepad
 import {View, Text, FlatList, TouchableOpacity} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {PaperProvider} from 'react-native-paper';
@@ -99,3 +99,6 @@ const App = () => {
 };
 
 export default App;
+
+
+

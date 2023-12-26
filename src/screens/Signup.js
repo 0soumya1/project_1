@@ -1,0 +1,312 @@
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  Dimensions,
+  TouchableOpacity,
+} from 'react-native';
+import React, {useState} from 'react';
+import {
+  BG_COLOR,
+  TEXT_COLOR,
+  THEME_COLOR2,
+  THEME_COLOR,
+  THEME_COLOR3,
+} from '../utils/Colors';
+import CustomTextInput from '../components/CustomTextInput';
+import LinearGradient from 'react-native-linear-gradient';
+import {BASE_URL, LOGIN_USER, REGISTER_USER} from '../utils/Strings';
+import Loader from '../components/Loader';
+import {useNavigation} from '@react-navigation/native';
+import {ScrollView} from 'react-native-gesture-handler';
+import style from '../../style';
+
+const Signup = () => {
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [mobile, setMobile] = useState('');
+  const [password, setPassword] = useState('');
+  const [badEmail, setBadEmail] = useState('');
+  const [badPassword, setBadPassword] = useState('');
+  const [badName, setBadName] = useState('');
+  const [badMobile, setBadMobile] = useState('');
+  const [selectedGender, setSelectedGender] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const navigation = useNavigation();
+
+  const validate = () => {
+    let isValid = false;
+    if (email == '') {
+      setBadEmail('Please Enter Email');
+      isValid = false;
+    } else if (
+      email != '' &&
+      !email
+        .toLowerCase()
+        .match(
+          /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+        )
+    ) {
+      setBadEmail('Please Enter Valid Email');
+      isValid = false;
+    } else if (
+      email != '' &&
+      email
+        .toLowerCase()
+        .match(
+          /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+        )
+    ) {
+      setBadEmail('');
+      isValid = true;
+    }
+
+    if (password == '') {
+      setBadPassword('Please Enter Password');
+      isValid = false;
+    } else if (password != '' && password.length < 2) {
+      setBadPassword('Please Enter Min 2 Characters Password');
+      isValid = false;
+    } else if (password != '' && password.length > 1) {
+      setBadPassword('');
+      isValid = true;
+    }
+
+    if (name == '') {
+      setBadName('Please Enter Name');
+      isValid = false;
+    } else if (name != '') {
+      setBadName('');
+      isValid = true;
+    }
+
+    if (mobile == '') {
+      setBadMobile('Please Enter Mobile');
+      isValid = false;
+    } else if (mobile != '' && mobile.length < 10) {
+      setBadMobile('Please Enter Valid Mobile Number');
+      isValid = false;
+    } else if (mobile != '' && mobile.length == 10) {
+      setBadMobile('');
+      isValid = true;
+    }
+
+    return isValid;
+  };
+
+  const signup = async () => {
+    setLoading(true);
+    console.log("signup-----", name + " " + email + ' ' + password  );
+
+    const myHeaders = new Headers();
+    myHeaders.append('Content-type', 'application/json');
+    fetch(BASE_URL + REGISTER_USER, {
+      body: {
+        name: name,
+        emailId: email,
+        mobile: mobile,
+        password: password,
+        gender: selectedGender == 0 ? "Male" : "Female"
+      },
+      method: 'POST',
+      headers: myHeaders,
+    })
+      .then(res => res.json())
+      .then(json => {
+        setLoading(false);
+        console.log(json);
+      })
+      .catch(err => {
+        setLoading(false);
+        console.log(err);
+      });
+
+    // let result = await fetch(BASE_URL + REGISTER_USER, {
+    //   method: 'post',
+    //   body: JSON.stringify({name, email, mobile, password, selectedGender}),
+    //   headers: {
+    //     'Content-Type': 'application/json',
+    //   },
+    // });
+    // result = await result.json();
+    // console.log(result, 'result');
+  };
+
+  return (
+    <ScrollView>
+      <View style={styles.container}>
+        <Image
+          source={require('../images/social_logo.png')}
+          style={styles.logo}
+        />
+        <Text style={[styles.welcomeText1, {marginTop: 25}]}>
+          Create Account
+        </Text>
+        <Text style={[styles.welcomeText1, {marginTop: 10}]}>
+          in <Text style={styles.welcomeText2}>Social</Text>
+        </Text>
+
+        <CustomTextInput
+          placeHolder={'Enter Name'}
+          value={name}
+          onChangeText={txt => setName(txt)}
+          isValid={badName == '' ? true : false}
+        />
+        {badName != '' && <Text style={styles.errorText}>{badName}</Text>}
+
+        <CustomTextInput
+          placeHolder={'Enter Email'}
+          value={email}
+          onChangeText={txt => setEmail(txt)}
+          isValid={badEmail == '' ? true : false}
+        />
+        {badEmail != '' && <Text style={styles.errorText}>{badEmail}</Text>}
+
+        <CustomTextInput
+          placeHolder={'Enter Mobile'}
+          value={mobile}
+          onChangeText={txt => setMobile(txt)}
+          keyboardType={'number-pad'}
+          isValid={badMobile == '' ? true : false}
+        />
+        {badMobile != '' && <Text style={styles.errorText}>{badMobile}</Text>}
+
+        <CustomTextInput
+          placeHolder={'Enter Password'}
+          value={password}
+          onChangeText={txt => setPassword(txt)}
+          isValid={badPassword == '' ? true : false}
+        />
+        {badPassword != '' && (
+          <Text style={styles.errorText}>{badPassword}</Text>
+        )}
+
+        <Text style={styles.heading}>Select Gender</Text>
+        <View style={styles.genderView}>
+          <TouchableOpacity
+            style={[
+              styles.genderBtn,
+              {borderColor: selectedGender == 0 ? 'green' : '#9e9e9e'},
+            ]}
+            onPress={() => {
+              setSelectedGender(0);
+            }}>
+            <Image source={require('../images/male.png')} style={styles.icon} />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[
+              styles.genderBtn,
+              {borderColor: selectedGender == 1 ? 'green' : '#9e9e9e'},
+            ]}
+            onPress={() => {
+              setSelectedGender(1);
+            }}>
+            <Image
+              source={require('../images/female.png')}
+              style={styles.icon}
+            />
+          </TouchableOpacity>
+        </View>
+
+        <LinearGradient colors={[THEME_COLOR2, THEME_COLOR]} style={styles.btn}>
+          <TouchableOpacity
+            style={[
+              styles.btn,
+              {justifyContent: 'center', alignItems: 'center', marginTop: 0},
+            ]}
+            onPress={() => {
+              if (validate()) {
+                signup();
+              }
+            }}>
+            <Text style={{color: BG_COLOR, fontSize: 17, fontWeight: '600'}}>
+              Sign Up
+            </Text>
+          </TouchableOpacity>
+        </LinearGradient>
+
+        <Text
+          style={styles.signupText}
+          onPress={() => {
+            navigation.navigate('Login');
+          }}>
+          Already have Account ?{' '}
+          <Text style={{color: THEME_COLOR, fontWeight: '700'}}>Login</Text>
+        </Text>
+        <Loader visible={loading} />
+      </View>
+    </ScrollView>
+  );
+};
+
+export default Signup;
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: BG_COLOR,
+  },
+  logo: {
+    width: 100,
+    height: 100,
+    alignSelf: 'center',
+    marginTop: Dimensions.get('window').height / 17,
+  },
+  welcomeText1: {
+    color: TEXT_COLOR,
+    alignSelf: 'center',
+    fontSize: 25,
+    fontWeight: '500',
+  },
+  welcomeText2: {
+    color: THEME_COLOR,
+    // alignSelf:"center",
+    // fontSize:25,
+    // fontWeight: "500",
+  },
+  btn: {
+    width: '90%',
+    height: 50,
+    alignSelf: 'center',
+    marginTop: 40,
+    borderRadius: 10,
+  },
+  errorText: {
+    color: 'red',
+    marginLeft: 30,
+    marginTop: 5,
+  },
+  signupText: {
+    fontSize: 16,
+    alignSelf: 'center',
+    marginTop: 30,
+    marginBottom: 50,
+    fontWeight: '500',
+    color: TEXT_COLOR,
+  },
+  heading: {
+    color: TEXT_COLOR,
+    marginLeft: 30,
+    marginTop: 20,
+  },
+  genderView: {
+    width: '90%',
+    alignSelf: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+    marginTop: 20,
+  },
+  genderBtn: {
+    width: '45%',
+    height: 100,
+    borderWidth: 1.5,
+    borderRadius: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  icon: {
+    width: 40,
+    height: 40,
+  },
+});

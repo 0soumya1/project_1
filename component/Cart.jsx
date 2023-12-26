@@ -1,3 +1,4 @@
+// Cart
 import {View, Text, FlatList, TouchableOpacity} from 'react-native';
 import React, {useState, useEffect} from 'react';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
