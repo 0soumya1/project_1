@@ -5,6 +5,7 @@ import {
   Image,
   Dimensions,
   TouchableOpacity,
+  ToastAndroid,
 } from 'react-native';
 import React, {useState} from 'react';
 import {
@@ -18,7 +19,10 @@ import CustomTextInput from '../components/CustomTextInput';
 import LinearGradient from 'react-native-linear-gradient';
 import {BASE_URL, LOGIN_USER} from '../utils/Strings';
 import Loader from '../components/Loader';
-import { useNavigation } from '@react-navigation/native';
+import {useNavigation} from '@react-navigation/native';
+import axios from 'axios';
+import { useDispatch } from 'react-redux';
+import { setAuthData } from '../redux/AuthSlice';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -27,6 +31,11 @@ const Login = () => {
   const [badPassword, setBadPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const navigation = useNavigation();
+  const dispatch = useDispatch();
+
+  const toast = msg => {
+    return ToastAndroid.show(msg, ToastAndroid.LONG, ToastAndroid.CENTER);
+  };
 
   const validate = () => {
     let isValid = false;
@@ -54,6 +63,7 @@ const Login = () => {
       setBadEmail('');
       isValid = true;
     }
+
     if (password == '') {
       setBadPassword('Please Enter Password');
       isValid = false;
@@ -69,37 +79,67 @@ const Login = () => {
 
   const login = async () => {
     setLoading(true);
-    console.log("login-----", email + ' ' + password);
+    console.log('login-----', email + ' ' + password);
 
-    const myHeaders = new Headers();
-    myHeaders.append("Content-type", "application/json");
-    fetch(BASE_URL + LOGIN_USER, {
-      body: {
-        emailId: email,
-        password: password,
-      },
-      method: 'POST',
-     headers: myHeaders,
-    })
-      .then(res => res.json())
-      .then(json => {
-     setLoading(false)
-        console.log(json);
+    // const myHeaders = new Headers();
+    // myHeaders.append("Content-type", "application/json");
+    // fetch(BASE_URL + LOGIN_USER, {
+    //   body: {
+    //     emailId: email,
+    //     password: password,
+    //   },
+    //   method: 'POST',
+    //  headers: myHeaders,
+    // })
+    //   .then(res => res.json())
+    //   .then(json => {
+    //     if(json){
+    //       setLoading(false);
+    //       toast('Login Successful');
+    //       console.log(json);
+    //     }else{
+    //       toast('please enter correct details');
+    //       setLoading(false);
+    //     }
+    //   })
+    //   .catch(err => {
+    //     setLoading(false);
+    //     toast('api login err');
+    //     console.log(err);
+    //   });
+
+    let data = {
+      emailId: email.trim(),
+      password: password.trim(),
+    };
+
+    axios
+      .post(BASE_URL + LOGIN_USER, data)
+      .then(res => {
+        if (res?.data) {
+          console.log('resp---', res?.data);
+          // toast('Login Successful');
+          // navigation.navigate('home');
+          setLoading(false);
+        } else {
+          // toast('please enter correct details');
+          setLoading(false);
+        }
+        if (!res.data.status) {
+          if (res.data.message == "Wrong password") {
+            setBadPassword(res.data.message)
+          }else{
+            setBadEmail(res.data.message)
+          }
+        }else{
+          dispatch(setAuthData(res.data))
+          navigation.navigate('Main');
+        }
       })
       .catch(err => {
-     setLoading(false)
-        console.log(err);
+        toast('api login err');
+        setLoading(false);
       });
-
-    // let result = await fetch(BASE_URL + LOGIN_USER, {
-    //   method: 'post',
-    //   body: JSON.stringify({email, password}),
-    //   headers: {
-    //     'Content-Type': 'application/json',
-    //   },
-    // });
-    // result = await result.json();
-    // console.log(result, 'result');
   };
 
   return (
@@ -146,9 +186,11 @@ const Login = () => {
         </TouchableOpacity>
       </LinearGradient>
 
-      <Text style={styles.signupText} onPress={()=>{
-        navigation.navigate("Signup")
-      }} >
+      <Text
+        style={styles.signupText}
+        onPress={() => {
+          navigation.navigate('Signup');
+        }}>
         Create New Account ?{' '}
         <Text style={{color: THEME_COLOR, fontWeight: '700'}}>Sign Up</Text>
       </Text>

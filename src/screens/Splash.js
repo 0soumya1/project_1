@@ -1,14 +1,22 @@
 import {View, Text, StyleSheet, Image} from 'react-native';
 import React, {useEffect} from 'react';
 import {useNavigation} from '@react-navigation/native';
+import {useSelector} from 'react-redux';
 
 const Splash = () => {
   const navigation = useNavigation();
+  const authData = useSelector((state => state.auth));
   useEffect(() => {
+    console.log('authData-----', authData);
     setTimeout(() => {
-      navigation.navigate('Login');
+      if (authData.data == null) {
+        navigation.navigate('Login');
+      } else {
+        navigation.navigate('Main');
+      }
     }, 3000);
   }, []);
+
   return (
     <View style={styles.container}>
       <Image

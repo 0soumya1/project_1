@@ -5,6 +5,7 @@ import {
   Image,
   Dimensions,
   TouchableOpacity,
+  ToastAndroid
 } from 'react-native';
 import React, {useState} from 'react';
 import {
@@ -20,7 +21,9 @@ import {BASE_URL, LOGIN_USER, REGISTER_USER} from '../utils/Strings';
 import Loader from '../components/Loader';
 import {useNavigation} from '@react-navigation/native';
 import {ScrollView} from 'react-native-gesture-handler';
-import style from '../../style';
+import axios from 'axios';
+import { useDispatch } from 'react-redux';
+import { setAuthData } from '../redux/AuthSlice';
 
 const Signup = () => {
   const [name, setName] = useState('');
@@ -34,6 +37,12 @@ const Signup = () => {
   const [selectedGender, setSelectedGender] = useState(0);
   const [loading, setLoading] = useState(false);
   const navigation = useNavigation();
+  const dispatch = useDispatch();
+
+  const toast = msg => {
+    return ToastAndroid.show(msg, ToastAndroid.LONG, ToastAndroid.CENTER);
+  };
+
 
   const validate = () => {
     let isValid = false;
@@ -95,42 +104,66 @@ const Signup = () => {
     return isValid;
   };
 
-  const signup = async () => {
+  const signUp = async () => {
     setLoading(true);
     console.log("signup-----", name + " " + email + ' ' + password  );
 
-    const myHeaders = new Headers();
-    myHeaders.append('Content-type', 'application/json');
-    fetch(BASE_URL + REGISTER_USER, {
-      body: {
+    // const myHeaders = new Headers();
+    // myHeaders.append('Content-type', 'application/json');
+    // fetch(BASE_URL + REGISTER_USER, {
+    //   body: {
+    //     name: name,
+    //     emailId: email,
+    //     mobile: mobile,
+    //     password: password,
+    //     gender: selectedGender == 0 ? "Male" : "Female"
+    //   },
+    //   method: 'POST',
+    //   headers: myHeaders,
+    // })
+    //   .then(res => res.json())
+    //   .then(json => {
+    //     if(json){
+    //       setLoading(false);
+    //       toast('SignUp Successful');
+    //       console.log(json);
+    //     }else{
+    //       toast('please enter correct details');
+    //       setLoading(false);
+    //     } 
+    //   })
+    //   .catch(err => {
+    //     setLoading(false);
+    //     toast('api signup err');
+    //     console.log(err);
+    //   });
+
+      let data = {
         name: name,
         emailId: email,
         mobile: mobile,
         password: password,
         gender: selectedGender == 0 ? "Male" : "Female"
-      },
-      method: 'POST',
-      headers: myHeaders,
-    })
-      .then(res => res.json())
-      .then(json => {
-        setLoading(false);
-        console.log(json);
-      })
-      .catch(err => {
-        setLoading(false);
-        console.log(err);
-      });
+      };
 
-    // let result = await fetch(BASE_URL + REGISTER_USER, {
-    //   method: 'post',
-    //   body: JSON.stringify({name, email, mobile, password, selectedGender}),
-    //   headers: {
-    //     'Content-Type': 'application/json',
-    //   },
-    // });
-    // result = await result.json();
-    // console.log(result, 'result');
+      axios
+      .post(BASE_URL + REGISTER_USER, data)
+      .then(res => {
+        if (res?.data) {
+          console.log("resp---", res?.data);
+          dispatch(setAuthData(res.data));
+          toast('Signup Successful');
+          navigation.navigate('Main');
+          setLoading(false);
+        } else {
+          toast('please enter correct details');
+          setLoading(false);
+        }
+      })
+      .catch(() => {
+        toast('api err');
+        setLoading(false);
+      });
   };
 
   return (
@@ -217,7 +250,7 @@ const Signup = () => {
             ]}
             onPress={() => {
               if (validate()) {
-                signup();
+                signUp();
               }
             }}>
             <Text style={{color: BG_COLOR, fontSize: 17, fontWeight: '600'}}>
