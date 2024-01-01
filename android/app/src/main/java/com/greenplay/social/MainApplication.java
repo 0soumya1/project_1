@@ -1,4 +1,4 @@
-package com.project_1;
+package com.greenplay.social;
 
 import android.app.Application;
 import com.facebook.react.PackageList;

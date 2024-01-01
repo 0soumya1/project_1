@@ -1,4 +1,4 @@
-package com.project_1;
+package com.greenplay.social;
 
 import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;
@@ -13,7 +13,7 @@ public class MainActivity extends ReactActivity {
    */
   @Override
   protected String getMainComponentName() {
-    return "project_1";
+    return "social";
   }
 
   /**
