@@ -6,7 +6,7 @@ const Loader = ({visible}) => {
   return (
     <Modal transparent visible={visible}>
       <View style={styles.mainView}>
-        <View style={styles.loderView}>
+        <View style={styles.loaderView}>
           <ActivityIndicator />
         </View>
       </View>
@@ -23,7 +23,7 @@ const styles = StyleSheet.create({
         justifyContent:"center",
         alignItems:"center",
     },
-    loderView:{
+    loaderView:{
         width:80,
         height:80,
         backgroundColor:BG_COLOR,

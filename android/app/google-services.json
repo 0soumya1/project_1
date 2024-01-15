@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1056425090082",
+    "project_id": "socialapp-7ba4a",
+    "storage_bucket": "socialapp-7ba4a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1056425090082:android:be48c5d0a9b8618bf2fe7b",
+        "android_client_info": {
+          "package_name": "com.greenplay.social"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB5RWBDtq8_ruZD02Eu4MrFPtE705RpySM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

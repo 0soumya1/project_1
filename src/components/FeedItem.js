@@ -7,9 +7,14 @@ import {
   ScrollView,
 } from 'react-native';
 import React from 'react';
+import {useSelector} from 'react-redux';
+import { THEME_COLOR2, THEME_COLOR } from '../utils/Colors';
 
-const FeedItem = ({data, index}) => {
-  console.log('data----', data);
+const FeedItem = ({data, index, list, onClickOptions, onClickLike}) => {
+  const authData = useSelector(state => state.auth);
+
+  // console.log('data----', data);
+  // console.log("listttttttttt----------", list)
 
   const timeDifference = previous => {
     const current = new Date();
@@ -36,39 +41,90 @@ const FeedItem = ({data, index}) => {
     }
   };
 
-  return (
-    <ScrollView>
-      <View style={styles.feed}>
-        <View style={styles.topView}>
-          <View style={styles.topLeft}>
-            <Image
-              source={require('../images/profile.png')}
-              style={styles.profile}
-            />
-            <View>
-              <Text style={styles.userName}>{data.item.userName}</Text>
-              <Text style={styles.time}>
-                {timeDifference(new Date(data.item.createdAt))}
-              </Text>
-            </View>
-          </View>
+  const checkLiked = () => {
+    let isLiked = false;
+    data.item.likes.map(item => {
+      if (item == authData.data.data._id) {
+        isLiked = true;
+      }
+    });
+    return isLiked;
+  };
 
+  return (
+    <View
+      style={[styles.feed, {marginBottom: list.length - 1 == index ? 100 : 0}]}>
+      <View style={styles.topView}>
+        <View style={styles.topLeft}>
+          <Image
+            source={require('../images/profile.png')}
+            style={styles.profile}
+          />
+          <View>
+            <Text style={styles.userName}>{data.item.userName}</Text>
+            <Text style={styles.time}>
+              {timeDifference(new Date(data.item.createdAt))}
+            </Text>
+          </View>
+        </View>
+
+        <TouchableOpacity
+          onPress={() => {
+            onClickOptions();
+          }}>
+          <Image
+            source={require('../images/options.png')}
+            style={styles.icon}
+          />
+        </TouchableOpacity>
+      </View>
+
+      <Text style={styles.caption}>{data.item.caption}</Text>
+
+      {data.item.imageUrl != '' && (
+        <Image source={{uri: data.item.imageUrl}} style={styles.image} />
+      )}
+      <View style={styles.bottomView}>
+        <View style={{flexDirection: 'row', alignItems: 'center'}}>
+          <TouchableOpacity
+            onPress={() => {
+              onClickLike();
+            }}>
+            <Image
+              source={
+                checkLiked()
+                  ? require('../images/liked.png')
+                  : require('../images/like.png')
+              }
+              style={[styles.icon, {tintColor: checkLiked() ? THEME_COLOR2 : "black"}]}
+            />
+          </TouchableOpacity>
+          <Text style={styles.count}>{data.item.likes.length + ' Likes'}</Text>
+        </View>
+
+        <View style={{flexDirection: 'row', alignItems: 'center'}}>
           <TouchableOpacity>
             <Image
-              source={require('../images/options.png')}
+              source={require('../images/comment.png')}
               style={styles.icon}
             />
           </TouchableOpacity>
+          <Text style={styles.count}>
+            {data.item.comments.length + ' Comments'}
+          </Text>
         </View>
-        <Text style={styles.caption}>{data.item.caption}</Text>
       </View>
-    </ScrollView>
+    </View>
   );
 };
 
 export default FeedItem;
 
 const styles = StyleSheet.create({
+  // container: {
+  //   flex: 1,
+  //   backgroundColor: 'white',
+  // },
   feed: {
     width: '90%',
     paddingBottom: 20,
@@ -117,5 +173,25 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     fontSize: 14,
     color: 'black',
+  },
+  image: {
+    width: '90%',
+    height: 200,
+    resizeMode: 'contain',
+    marginTop: 10,
+    alignSelf: 'center',
+  },
+  bottomView: {
+    width: '90%',
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+    alignItems: 'center',
+    marginTop: 20,
+    marginBottom: 10,
+  },
+  count: {
+    color: 'black',
+    fontSize: 16,
+    marginLeft: 6,
   },
 });

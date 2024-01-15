@@ -9,11 +9,21 @@ import {
 import React, {useRef, useState} from 'react';
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import {THEME_COLOR2} from '../utils/Colors';
+import storage from '@react-native-firebase/storage';
+import {useSelector} from 'react-redux';
+import {ADD_POST, BASE_URL} from '../utils/Strings';
+import { useNavigation } from '@react-navigation/native';
+import Loader from '../components/Loader';
 
 const AddPost = () => {
   const ref = useRef();
+  const navigation = useNavigation();
   const [imageData, setImageData] = useState(null);
-  const [caption, setcation] = useState('');
+  const [caption, setCaption] = useState('');
+  const [loading, setLoading] = useState(false);
+  const authData = useSelector(state => state.auth);
+  
+  // console.log('authData--------', authData.data);
 
   const openCamera = async () => {
     const res = await launchCamera({mediaType: 'photo'});
@@ -28,6 +38,47 @@ const AddPost = () => {
     }
   };
 
+  const UploadImageToFirebase = async () => {
+    setLoading(true)
+    let url = '';
+
+    const myHeaders = new Headers();
+    myHeaders.append('Content-Type', 'application/json');
+
+    if (imageData != null) {
+      const reference = storage().ref(imageData.assets[0].fileName); //create ref
+      const pathToFile = imageData.assets[0].uri;
+      // uploads file
+      await reference.putFile(pathToFile);
+      url = await storage().ref(imageData.assets[0].fileName).getDownloadURL();
+    }
+
+    let body = JSON.stringify({
+      userName: authData.data.data.name,
+      userId: authData.data.data._id,
+      caption: caption,
+      imageUrl: url,
+    });
+
+    fetch(BASE_URL + ADD_POST, {
+      body,
+      method: 'POST',
+      headers: myHeaders,
+    })
+      .then(res => res.json())
+      .then(json => {
+        setLoading(false)
+        console.log('post json---------------',json);
+        navigation.goBack();
+      })
+      .catch(err => {
+        setLoading(false)
+        console.log(err);
+      });
+  };
+
+  // console.log('imageData----------', imageData);
+
   return (
     <View style={styles.container}>
       <TouchableOpacity
@@ -38,7 +89,7 @@ const AddPost = () => {
         }}>
         <TextInput
           value={caption}
-          onChangeText={txt => setcation(txt)}
+          onChangeText={txt => setCaption(txt)}
           ref={ref}
           placeholder="Type caption here...."
           style={styles.input}
@@ -82,16 +133,20 @@ const AddPost = () => {
       </TouchableOpacity>
 
       <TouchableOpacity
-      disabled = {caption == '' && imageData == null ? true : false}
+        disabled={caption == '' && imageData == null ? true : false}
         style={[
           styles.postBtn,
           {
             backgroundColor:
               caption == '' && imageData == null ? '#f2f2f2' : THEME_COLOR2,
           },
-        ]}>
+        ]}
+        onPress={() => {
+          UploadImageToFirebase();
+        }}>
         <Text style={styles.btnText}>Post Now</Text>
       </TouchableOpacity>
+      <Loader visible={loading}/>
     </View>
   );
 };
@@ -166,8 +221,8 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     borderRadius: 10,
   },
-  btnText:{
-    fontSize:16,
-    color:"white",
-  }
+  btnText: {
+    fontSize: 16,
+    color: 'white',
+  },
 });
