@@ -7,6 +7,7 @@ import Login from '../screens/Login'
 import Signup from '../screens/Signup'
 import Main from '../screens/Main'
 import AddPost from '../screens/AddPost'
+import Comments from '../screens/Comments'
 
 
 const Stack = createStackNavigator()
@@ -20,6 +21,7 @@ const MainNavigator = () => {
         <Stack.Screen name='Signup' component={Signup} options={{headerShown: false}}/>
         <Stack.Screen name='Main' component={Main} options={{headerShown: false}}/>
         <Stack.Screen name='AddPost' component={AddPost} options={{headerShown: true}}/>
+        <Stack.Screen name='Comments' component={Comments} options={{headerShown: true}}/>
     </Stack.Navigator>
   </NavigationContainer>
   )

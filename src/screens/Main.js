@@ -86,7 +86,7 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 70,
     position: 'absolute',
-    bottom: 1,
+    bottom: 0,
     backgroundColor: '#f2f2f2',
     flexDirection: 'row',
     justifyContent: 'space-evenly',

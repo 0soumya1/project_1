@@ -10,3 +10,6 @@ export const ADD_POST = "post/add";
 export const DELETE_POST = "post/delete/";
 export const UPDATE_POST = "post/update/";
 export const LIKE_POST = "post/like/";
+export const ADD_COMMENT = "post/comment/add";
+export const GET_COMMENTS = "post/comment/get/";
+export const DELETE_COMMENT = "post/comment/delete/";

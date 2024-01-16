@@ -59,6 +59,7 @@ const Feeds = () => {
   };
 
   const updatePost = caption => {
+    setLoading(true)
     const myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
 

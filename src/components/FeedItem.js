@@ -8,38 +8,40 @@ import {
 } from 'react-native';
 import React from 'react';
 import {useSelector} from 'react-redux';
-import { THEME_COLOR2, THEME_COLOR } from '../utils/Colors';
+import {THEME_COLOR2, THEME_COLOR} from '../utils/Colors';
+import {useNavigation} from '@react-navigation/native';
+
+export const timeDifference = previous => {
+  const current = new Date();
+  var msPerMinute = 60 * 1000;
+  var msPerHour = msPerMinute * 60;
+  var msPerDay = msPerHour * 24;
+  var msPerMonth = msPerDay * 30;
+  var msPerYear = msPerDay * 365;
+
+  var elapsed = current - previous;
+
+  if (elapsed < msPerMinute) {
+    return Math.round(elapsed / 1000) + ' seconds ago';
+  } else if (elapsed < msPerHour) {
+    return Math.round(elapsed / msPerMinute) + ' minutes ago';
+  } else if (elapsed < msPerDay) {
+    return Math.round(elapsed / msPerHour) + ' hours ago';
+  } else if (elapsed < msPerMonth) {
+    return Math.round(elapsed / msPerDay) + ' days ago';
+  } else if (elapsed < msPerYear) {
+    return Math.round(elapsed / msPerMonth) + ' months ago';
+  } else {
+    return Math.round(elapsed / msPerYear) + ' years ago';
+  }
+};
 
 const FeedItem = ({data, index, list, onClickOptions, onClickLike}) => {
   const authData = useSelector(state => state.auth);
+  const navigation = useNavigation();
 
   // console.log('data----', data);
   // console.log("listttttttttt----------", list)
-
-  const timeDifference = previous => {
-    const current = new Date();
-    var msPerMinute = 60 * 1000;
-    var msPerHour = msPerMinute * 60;
-    var msPerDay = msPerHour * 24;
-    var msPerMonth = msPerDay * 30;
-    var msPerYear = msPerDay * 365;
-
-    var elapsed = current - previous;
-
-    if (elapsed < msPerMinute) {
-      return Math.round(elapsed / 1000) + ' seconds ago';
-    } else if (elapsed < msPerHour) {
-      return Math.round(elapsed / msPerMinute) + ' minutes ago';
-    } else if (elapsed < msPerDay) {
-      return Math.round(elapsed / msPerHour) + ' hours ago';
-    } else if (elapsed < msPerMonth) {
-      return Math.round(elapsed / msPerDay) + ' days ago';
-    } else if (elapsed < msPerYear) {
-      return Math.round(elapsed / msPerMonth) + ' months ago';
-    } else {
-      return Math.round(elapsed / msPerYear) + ' years ago';
-    }
-  };
 
   const checkLiked = () => {
     let isLiked = false;
@@ -96,14 +98,20 @@ const FeedItem = ({data, index, list, onClickOptions, onClickLike}) => {
                   ? require('../images/liked.png')
                   : require('../images/like.png')
               }
-              style={[styles.icon, {tintColor: checkLiked() ? THEME_COLOR2 : "black"}]}
+              style={[
+                styles.icon,
+                {tintColor: checkLiked() ? THEME_COLOR2 : 'black'},
+              ]}
             />
           </TouchableOpacity>
           <Text style={styles.count}>{data.item.likes.length + ' Likes'}</Text>
         </View>
 
         <View style={{flexDirection: 'row', alignItems: 'center'}}>
-          <TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate('Comments', {id: data.item._id});
+            }}>
             <Image
               source={require('../images/comment.png')}
               style={styles.icon}
