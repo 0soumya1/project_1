@@ -36,7 +36,15 @@ export const timeDifference = previous => {
   }
 };
 
-const FeedItem = ({data, index, list, onClickOptions, onClickLike}) => {
+const FeedItem = ({
+  data,
+  index,
+  list,
+  onClickOptions,
+  onClickLike,
+  onFollow,
+  isFollowed,
+}) => {
   const authData = useSelector(state => state.auth);
   const navigation = useNavigation();
 
@@ -69,16 +77,26 @@ const FeedItem = ({data, index, list, onClickOptions, onClickLike}) => {
             </Text>
           </View>
         </View>
-
-        <TouchableOpacity
-          onPress={() => {
-            onClickOptions();
-          }}>
-          <Image
-            source={require('../images/options.png')}
-            style={styles.icon}
-          />
-        </TouchableOpacity>
+        {authData.data.data._id == data.item.userId && (
+          <TouchableOpacity
+            onPress={() => {
+              onClickOptions();
+            }}>
+            <Image
+              source={require('../images/options.png')}
+              style={styles.icon}
+            />
+          </TouchableOpacity>
+        )}
+        {authData.data.data._id != data.item.userId && (
+          <TouchableOpacity
+            style={styles.followBtn}
+            onPress={() => {
+              onFollow();
+            }}>
+            <Text style={{color: 'white'}}>{isFollowed ? "Unfollow":"Follow"}</Text>
+          </TouchableOpacity>
+        )}
       </View>
 
       <Text style={styles.caption}>{data.item.caption}</Text>
@@ -201,5 +219,15 @@ const styles = StyleSheet.create({
     color: 'black',
     fontSize: 16,
     marginLeft: 6,
+  },
+  followBtn: {
+    backgroundColor: THEME_COLOR2,
+    height: 35,
+    paddingLeft: 15,
+    paddingRight: 15,
+    justifyContent: 'center',
+    alignItems: 'center',
+    // marginTop:5,
+    borderRadius: 10,
   },
 });

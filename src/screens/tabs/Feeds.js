@@ -4,8 +4,10 @@ import {
   BASE_URL,
   DELETE_POST,
   FEEDS,
+  FOLLOW_USER,
   LIKE_POST,
   UPDATE_POST,
+  USER_PROFILE,
 } from '../../utils/Strings';
 import FeedItem from '../../components/FeedItem';
 import {useIsFocused} from '@react-navigation/native';
@@ -22,6 +24,7 @@ const Feeds = () => {
   const [loading, setLoading] = useState(false);
   const [openUpdateModal, setOpenUpdateModal] = useState(false);
   const authData = useSelector(state => state.auth);
+  const [userData, setUserData] = useState(null);
 
   useEffect(() => {
     getData();
@@ -34,6 +37,19 @@ const Feeds = () => {
         json.data.reverse();
         setFeeds(json.data);
         // console.log('get data json-----', json);
+      });
+  };
+
+  useEffect(() => {
+    getProfileData();
+  }, [isfocused]);
+
+  const getProfileData = () => {
+    fetch(BASE_URL + USER_PROFILE + authData.data.data._id)
+      .then(res => res.json())
+      .then(json => {
+        setUserData(json.data);
+        console.log('profile data json-----', json);
       });
   };
 
@@ -59,7 +75,7 @@ const Feeds = () => {
   };
 
   const updatePost = caption => {
-    setLoading(true)
+    setLoading(true);
     const myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
 
@@ -103,7 +119,7 @@ const Feeds = () => {
       .then(json => {
         setLoading(false);
         console.log('like json---------------', json);
-        console.log("Item----------1111111", item )
+        console.log('Item----------1111111', item);
         getData();
       })
       .catch(err => {
@@ -112,7 +128,45 @@ const Feeds = () => {
       });
   };
   // console.log("selectedItem----------1111111", selectedItem )
-  
+
+  const followUser = id => {
+    setLoading(true);
+    const myHeaders = new Headers();
+    myHeaders.append('Content-Type', 'application/json');
+
+    const body = JSON.stringify({
+      userId: authData.data.data._id,
+    });
+
+    fetch(BASE_URL + FOLLOW_USER + id, {
+      method: 'PUT',
+      body,
+      headers: myHeaders,
+    })
+      .then(res => res.json())
+      .then(json => {
+        setLoading(false);
+        console.log('follow user json---------------', json);
+        getProfileData();
+        getData();
+      })
+      .catch(err => {
+        setLoading(false);
+        console.log('err', err);
+      });
+  };
+
+  const checkFollow = id => {
+    let isFollowed = false;
+    if (userData != null) {
+      userData.following.map(item => {
+        if (item == id) {
+          isFollowed = true;
+        }
+      });
+    }
+    return isFollowed;
+  };
   return (
     <View style={styles.container}>
       <FlatList
@@ -123,12 +177,17 @@ const Feeds = () => {
               list={feeds}
               data={item}
               index={index}
+              isFollowed={checkFollow(item.item.userId)}
               onClickOptions={() => {
                 setSelectedItem(item);
                 setOpenOptions(true);
               }}
               onClickLike={() => {
                 likePost(item);
+              }}
+              onFollow={() => {
+                // console.log(item, "item...........1111111112222222")
+                followUser(item.item.userId);
               }}
             />
           );

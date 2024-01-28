@@ -13,3 +13,6 @@ export const LIKE_POST = "post/like/";
 export const ADD_COMMENT = "post/comment/add";
 export const GET_COMMENTS = "post/comment/get/";
 export const DELETE_COMMENT = "post/comment/delete/";
+export const UPDATE_COMMENT = "post/comment/update/";
+export const FOLLOW_USER = "users/follow/";
+export const UPDATE_USER = "users/update/";

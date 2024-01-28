@@ -1,9 +1,11 @@
 import {View, Text, Image, TouchableOpacity} from 'react-native';
 import React from 'react';
 import {timeDifference} from './FeedItem';
+import {useSelector} from 'react-redux';
 
-const CommentItem = ({data, onDelete}) => {
-//   console.log('data----', data);
+const CommentItem = ({data, onClickOption}) => {
+  const authData = useSelector(state => state.auth);
+  // console.log('data----', data);
   return (
     <View
       style={{
@@ -37,12 +39,18 @@ const CommentItem = ({data, onDelete}) => {
             </Text>
           </View>
         </View>
-        <TouchableOpacity>
-          <Image
-            source={require('../images/options.png')}
-            style={{width: 24, height: 24}}
-          />
-        </TouchableOpacity>
+
+        {authData.data.data._id == data.item.userId && (
+          <TouchableOpacity
+            onPress={() => {
+              onClickOption();
+            }}>
+            <Image
+              source={require('../images/options.png')}
+              style={{width: 24, height: 24}}
+            />
+          </TouchableOpacity>
+        )}
       </View>
       <Text
         style={{
