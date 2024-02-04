@@ -7,6 +7,7 @@ import {
   FlatList,
   Keyboard,
   Modal,
+  ScrollView,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {BG_COLOR, THEME_COLOR2} from '../utils/Colors';
@@ -139,6 +140,7 @@ const Comments = () => {
   };
   return (
     <View style={styles.container}>
+     <ScrollView style={{flex:1, marginBottom:80}}>
       <FlatList
         data={commentList}
         renderItem={(item, index) => {
@@ -153,6 +155,7 @@ const Comments = () => {
           );
         }}
       />
+          </ScrollView>
       <View style={styles.bottomNav}>
         <TextInput
           value={comment}
@@ -187,6 +190,7 @@ const Comments = () => {
           }
         }}
       />
+ 
       <Modal transparent visible={openUpdateCommentModal}>
         <View style={styles.modalView}>
           <View style={styles.mainView}>
@@ -227,6 +231,7 @@ export default Comments;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    // marginBottom: 20,
   },
   bottomNav: {
     width: '100%',

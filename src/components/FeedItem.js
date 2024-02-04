@@ -66,10 +66,14 @@ const FeedItem = ({
       style={[styles.feed, {marginBottom: list.length - 1 == index ? 100 : 0}]}>
       <View style={styles.topView}>
         <View style={styles.topLeft}>
-          <Image
+         <TouchableOpacity onPress={()=>{
+          navigation.navigate("UserProfile", {id: data.item.userId})
+         }}>
+         <Image
             source={require('../images/profile.png')}
             style={styles.profile}
           />
+         </TouchableOpacity>
           <View>
             <Text style={styles.userName}>{data.item.userName}</Text>
             <Text style={styles.time}>

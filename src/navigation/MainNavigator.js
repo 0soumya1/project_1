@@ -9,7 +9,7 @@ import Main from '../screens/Main'
 import AddPost from '../screens/AddPost'
 import Comments from '../screens/Comments'
 import EditProfile from '../screens/EditProfile'
-
+import UserProfile from '../screens/tabs/UserProfile'
 
 const Stack = createStackNavigator()
 
@@ -24,6 +24,7 @@ const MainNavigator = () => {
         <Stack.Screen name='AddPost' component={AddPost} options={{headerShown: true}}/>
         <Stack.Screen name='Comments' component={Comments} options={{headerShown: true}}/>
         <Stack.Screen name='EditProfile' component={EditProfile} options={{headerShown: true}}/>
+        <Stack.Screen name='UserProfile' component={UserProfile} options={{headerShown: true}}/>
     </Stack.Navigator>
   </NavigationContainer>
   )

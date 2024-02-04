@@ -7,7 +7,7 @@ const Splash = () => {
   const navigation = useNavigation();
   const authData = useSelector((state => state.auth));
   useEffect(() => {
-    console.log('authData-----', authData);
+    console.log('Splash authData-----', authData);
     setTimeout(() => {
       if (authData.data == null) {
         navigation.navigate('Login');

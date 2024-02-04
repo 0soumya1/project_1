@@ -28,6 +28,7 @@ const Feeds = () => {
 
   useEffect(() => {
     getData();
+    getProfileData();
   }, [isfocused]);
 
   const getData = () => {
@@ -40,16 +41,12 @@ const Feeds = () => {
       });
   };
 
-  useEffect(() => {
-    getProfileData();
-  }, [isfocused]);
-
   const getProfileData = () => {
     fetch(BASE_URL + USER_PROFILE + authData.data.data._id)
       .then(res => res.json())
       .then(json => {
         setUserData(json.data);
-        console.log('profile data json-----', json);
+        // console.log('profile data json-----', json);
       });
   };
 
@@ -229,5 +226,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'white',
+    marginBottom:85,
   },
 });

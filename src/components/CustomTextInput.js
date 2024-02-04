@@ -21,10 +21,10 @@ const CustomTextInput = ({
         marginTop: mt ? mt : 20,
         flexDirection: 'row',
         alignItems: 'center',
-        paddingLeft: 15,
+        paddingLeft: 5,
       }}>
       <TextInput
-        style={{marginLeft: 10, width:'100%'}}
+        style={{ width:'100%'}}
         placeholder={placeHolder}
         onChangeText={txt => onChangeText(txt)}
         value={value}

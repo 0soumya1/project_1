@@ -8,7 +8,7 @@ import {
   ScrollView,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
-import {useIsFocused, useNavigation} from '@react-navigation/native';
+import {useIsFocused, useNavigation, useRoute} from '@react-navigation/native';
 import {
   BASE_URL,
   DELETE_POST,
@@ -24,7 +24,9 @@ import OptionModal from '../../components/OptionModal';
 import Loader from '../../components/Loader';
 import UpdateModal from '../../components/UpdateModal';
 
-const Profile = () => {
+const UserProfile = () => {
+  const route = useRoute();
+  // console.log(route);
   const navigation = useNavigation();
   const isfocused = useIsFocused();
   const authData = useSelector(state => state.auth);
@@ -41,7 +43,7 @@ const Profile = () => {
   }, [isfocused]);
 
   const getProfileData = () => {
-    fetch(BASE_URL + USER_PROFILE + authData.data.data._id)
+    fetch(BASE_URL + USER_PROFILE + route.params.id)
       .then(res => res.json())
       .then(json => {
         setUserData(json.data);
@@ -134,6 +136,18 @@ const Profile = () => {
         console.log('err', err);
       });
   };
+
+  const checkFollow = id => {
+    let isFollowed = false;
+    if (userData != null) {
+      userData.followers.map(item => {
+        if (item == id) {
+          isFollowed = true;
+        }
+      });
+    }
+    return isFollowed;
+  };
   return (
     <ScrollView nestedScrollEnabled style={styles.container}>
       <View style={styles.coverArea}>
@@ -149,12 +163,15 @@ const Profile = () => {
         {userData != null && userData.profilePic != '' ? (
           <Image
             source={{uri: userData.profilePic}}
-            style={[styles.profile, {width: '100%', height: '100%', borderRadius:50}]}
+            style={[
+              styles.profile,
+              {width: '100%', height: '100%', borderRadius: 50},
+            ]}
           />
         ) : (
           <Image
             source={require('../../images/user1.png')}
-            style={[styles.profile, {tintColor:"white"}]}
+            style={[styles.profile, {tintColor: 'white'}]}
           />
         )}
       </View>
@@ -183,13 +200,15 @@ const Profile = () => {
         </View>
       </View>
 
-      <TouchableOpacity
-        style={styles.editBtn}
-        onPress={() => {
-          navigation.navigate('EditProfile', {data: userData});
-        }}>
-        <Text style={styles.editBtnText}>Edit Profile</Text>
-      </TouchableOpacity>
+      {userData != null && authData.data.data._id == userData._id ? (
+        <TouchableOpacity
+          style={styles.editBtn}
+          onPress={() => {
+            navigation.navigate('EditProfile', {data: userData});
+          }}>
+          <Text style={styles.editBtnText}>Edit Profile</Text>
+        </TouchableOpacity>
+      ) : null}
 
       <FlatList
         data={feeds}
@@ -199,8 +218,8 @@ const Profile = () => {
               list={feeds}
               data={item}
               index={index}
-              isFollowed={false}
-              // isFollowed={checkFollow(item.item.userId)}
+              // isFollowed={false}
+              isFollowed={checkFollow(authData.data.data._id)}
               onClickOptions={() => {
                 setSelectedItem(item);
                 setOpenOptions(true);
@@ -230,7 +249,7 @@ const Profile = () => {
           }
         }}
       />
-     
+
       <UpdateModal
         data={selectedItem}
         visible={openUpdateModal}
@@ -242,17 +261,17 @@ const Profile = () => {
           updatePost(x);
         }}
       />
-       <Loader visible={loading} />
+      <Loader visible={loading} />
     </ScrollView>
   );
 };
 
-export default Profile;
+export default UserProfile;
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginBottom:100,
+    marginBottom: 20,
   },
   profileView: {
     width: 100,

@@ -21,8 +21,8 @@ import {BASE_URL, LOGIN_USER} from '../utils/Strings';
 import Loader from '../components/Loader';
 import {useNavigation} from '@react-navigation/native';
 import axios from 'axios';
-import { useDispatch } from 'react-redux';
-import { setAuthData } from '../redux/AuthSlice';
+import {useDispatch} from 'react-redux';
+import {setAuthData} from '../redux/AuthSlice';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -81,65 +81,71 @@ const Login = () => {
     setLoading(true);
     console.log('login-----', email + ' ' + password);
 
-    // const myHeaders = new Headers();
-    // myHeaders.append("Content-type", "application/json");
-    // fetch(BASE_URL + LOGIN_USER, {
-    //   body: {
-    //     emailId: email,
-    //     password: password,
-    //   },
-    //   method: 'POST',
-    //  headers: myHeaders,
-    // })
-    //   .then(res => res.json())
-    //   .then(json => {
-    //     if(json){
+    const myHeaders = new Headers();
+    myHeaders.append('Content-type', 'application/json');
+
+    fetch(BASE_URL + LOGIN_USER, {
+      body: JSON.stringify({
+        emailId: email,
+        password: password,
+      }),
+      method: 'POST',
+      headers: myHeaders,
+    })
+      .then(res => res.json())
+      .then(json => {
+          setLoading(false);
+          if(!json.status){
+            if(json.message == "Wrong Password"){
+              setBadPassword(json.message)
+            }else{
+              setBadEmail(json.message)
+            }
+          }else{
+            dispatch(setAuthData(json))
+            navigation.navigate('Main');
+            toast('Login Successful');
+          }
+          console.log("login json--------", json);
+      })
+      .catch(err => {
+        setLoading(false);
+        toast('api login err');
+        console.log(err);
+      });
+
+    // let data = {
+    //   emailId: email.trim(),
+    //   password: password.trim(),
+    // };
+
+    // axios
+    //   .post(BASE_URL + LOGIN_USER, data)
+    //   .then(res => {
+    //     if (res?.data) {
+    //       console.log('resp---', res?.data);
+    //       // toast('Login Successful');
+    //       // navigation.navigate('home');
     //       setLoading(false);
-    //       toast('Login Successful');
-    //       console.log(json);
+    //     } else {
+    //       // toast('please enter correct details');
+    //       setLoading(false);
+    //     }
+    //     if (!res.data.status) {
+    //       if (res.data.message == "Wrong password") {
+    //         setBadPassword(res.data.message)
+    //       }else{
+    //         setBadEmail(res.data.message)
+    //       }
     //     }else{
-    //       toast('please enter correct details');
-    //       setLoading(false);
+    //       dispatch(setAuthData(res.data))
+    //       navigation.navigate('Main');
     //     }
     //   })
     //   .catch(err => {
-    //     setLoading(false);
     //     toast('api login err');
-    //     console.log(err);
+    //     setLoading(false);
     //   });
-
-    let data = {
-      emailId: email.trim(),
-      password: password.trim(),
-    };
-
-    axios
-      .post(BASE_URL + LOGIN_USER, data)
-      .then(res => {
-        if (res?.data) {
-          console.log('resp---', res?.data);
-          // toast('Login Successful');
-          // navigation.navigate('home');
-          setLoading(false);
-        } else {
-          // toast('please enter correct details');
-          setLoading(false);
-        }
-        if (!res.data.status) {
-          if (res.data.message == "Wrong password") {
-            setBadPassword(res.data.message)
-          }else{
-            setBadEmail(res.data.message)
-          }
-        }else{
-          dispatch(setAuthData(res.data))
-          navigation.navigate('Main');
-        }
-      })
-      .catch(err => {
-        toast('api login err');
-        setLoading(false);
-      });
   };
 
   return (
