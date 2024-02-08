@@ -6,6 +6,7 @@ import {
   Dimensions,
   TouchableOpacity,
   ToastAndroid,
+  ScrollView,
 } from 'react-native';
 import React, {useState} from 'react';
 import {
@@ -17,10 +18,9 @@ import {
 } from '../utils/Colors';
 import CustomTextInput from '../components/CustomTextInput';
 import LinearGradient from 'react-native-linear-gradient';
-import {BASE_URL, LOGIN_USER, REGISTER_USER} from '../utils/Strings';
+import {BASE_URL, REGISTER_USER} from '../utils/Strings';
 import Loader from '../components/Loader';
 import {useNavigation} from '@react-navigation/native';
-import {ScrollView} from 'react-native-gesture-handler';
 import axios from 'axios';
 import {useDispatch} from 'react-redux';
 import {setAuthData} from '../redux/AuthSlice';
@@ -108,7 +108,7 @@ const Signup = () => {
     console.log('signup-----', name + ' ' + email + ' ' + password);
 
     const myHeaders = new Headers();
-    myHeaders.append('Content-type', 'application/json');
+    myHeaders.append('Content-Type', 'application/json');
 
     fetch(BASE_URL + REGISTER_USER, {
       body: JSON.stringify({
@@ -126,14 +126,14 @@ const Signup = () => {
         setLoading(false);
         if (json) {
           dispatch(setAuthData(json));
+          navigation.navigate('Main');
+          toast('SignUp Successful');
         }
-        navigation.navigate('Main');
-        // toast('SignUp Successful');
         console.log('signup json--------', json);
       })
       .catch(err => {
         setLoading(false);
-        // toast('api signup err');
+        toast('api signup err');
         console.log(err);
       });
 

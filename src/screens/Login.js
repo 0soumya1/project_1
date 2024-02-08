@@ -82,7 +82,7 @@ const Login = () => {
     console.log('login-----', email + ' ' + password);
 
     const myHeaders = new Headers();
-    myHeaders.append('Content-type', 'application/json');
+    myHeaders.append('Content-Type', 'application/json');
 
     fetch(BASE_URL + LOGIN_USER, {
       body: JSON.stringify({
