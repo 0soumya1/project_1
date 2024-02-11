@@ -110,13 +110,42 @@ const Signup = () => {
     const myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
 
+    // var raw = JSON.stringify({
+    //   name: name,
+    //   emailId: email,
+    //   mobile: mobile,
+    //   password: password,
+    //   gender: selectedGender == 0 ? 'male' : 'female',
+    // });
+
+    // var requestOptions = {
+    //   method: 'POST',
+    //   headers: myHeaders,
+    //   body: raw,
+    //   redirect: 'follow',
+    // };
+
+    // fetch(
+    //   'https://backend-social-app-kappa.vercel.app/socialapp/api/auth/register',
+    //   requestOptions,
+    // )
+    //   .then(response => response.text())
+    //   .then(result => {
+    //     setLoading(false);
+    //     dispatch(setAuthData(result));
+    //     navigation.navigate('AddPost');
+    //     toast('SignUp Successful');
+    //     console.log('result---------------', result);
+    //   })
+    //   .catch(error => console.log('error', error));
+
     fetch(BASE_URL + REGISTER_USER, {
       body: JSON.stringify({
         name: name,
         emailId: email,
         mobile: mobile,
         password: password,
-        gender: selectedGender == 0 ? 'Male' : 'Female',
+        gender: selectedGender == 0 ? 'male' : 'female',
       }),
       method: 'POST',
       headers: myHeaders,
@@ -128,8 +157,8 @@ const Signup = () => {
           dispatch(setAuthData(json));
           navigation.navigate('Main');
           toast('SignUp Successful');
+          console.log("signup json-----------", json)
         }
-        console.log('signup json--------', json);
       })
       .catch(err => {
         setLoading(false);
@@ -142,7 +171,7 @@ const Signup = () => {
     //   emailId: email,
     //   mobile: mobile,
     //   password: password,
-    //   gender: selectedGender == 0 ? "Male" : "Female"
+    //   gender: selectedGender == 0 ? "male" : "female"
     // };
 
     // axios
@@ -163,6 +192,45 @@ const Signup = () => {
     //   toast('api err');
     //   setLoading(false);
     // });
+
+    // let data = JSON.stringify({
+    //   name: name,
+    //   emailId: email,
+    //   mobile: mobile,
+    //   password: password,
+    //   gender: selectedGender == 0 ? 'male' : 'female',
+    // });
+    // console.log('dataatata-------', data);
+
+    // let config = {
+    //   method: 'post',
+    //   // maxBodyLength: Infinity,
+    //   url: BASE_URL + REGISTER_USER,
+    //   headers: {
+    //     'Content-Type': 'application/json',
+    //   },
+    //   data: data,
+    // };
+
+    // console.log('configggg111', config);
+
+    // axios
+    //   .request(config)
+    //   .then(response => {
+    //     setLoading(false);
+    //     dispatch(setAuthData(response.data));
+    //     navigation.navigate('Main');
+    //     toast('Signup Successful');
+    //     console.log(
+    //       'ressssssssssssssssssssssss',
+    //       JSON.stringify(response.data),
+    //     );
+    //   })
+    //   .catch(error => {
+    //     toast('api err');
+    //     setLoading(false);
+    //     console.log('errrrrrrrrr', error);
+    //   });
   };
 
   return (
@@ -206,6 +274,7 @@ const Signup = () => {
 
         <CustomTextInput
           placeHolder={'Enter Password'}
+          type={"password"}
           value={password}
           onChangeText={txt => setPassword(txt)}
           isValid={badPassword == '' ? true : false}

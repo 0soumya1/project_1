@@ -169,11 +169,12 @@ const Login = () => {
 
       <CustomTextInput
         placeHolder={'Enter Password'}
+        type={"password"}
         value={password}
         onChangeText={txt => setPassword(txt)}
         isValid={badPassword == '' ? true : false}
       />
-      {badPassword != '' && <Text style={styles.errorText}>{badPassword}</Text>}
+      {badPassword != '' && badPassword != "Wrong password" && <Text style={styles.errorText}>{badPassword}</Text>}
 
       <LinearGradient colors={[THEME_COLOR2, THEME_COLOR]} style={styles.btn}>
         <TouchableOpacity

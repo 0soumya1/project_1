@@ -8,6 +8,7 @@ const CustomTextInput = ({
   isValid,
   keyboardType,
   value,
+  type,
 }) => {
   return (
     <View
@@ -29,6 +30,7 @@ const CustomTextInput = ({
         onChangeText={txt => onChangeText(txt)}
         value={value}
         keyboardType={keyboardType ? keyboardType: "default"}
+        secureTextEntry={type ? true : false}
       />
     </View>
   );
