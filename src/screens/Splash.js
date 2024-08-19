@@ -10,9 +10,9 @@ const Splash = () => {
     console.log('Splash authData-----', authData);
     setTimeout(() => {
       if (authData.data == null) {
-        navigation.navigate('Login');
+        navigation.replace('Login');
       } else {
-        navigation.navigate('Main');
+        navigation.replace('Main');
       }
     }, 3000);
   }, []);

@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   ToastAndroid,
 } from 'react-native';
-import React, {useState} from 'react';
+import React, {useCallback, useState} from 'react';
 import {
   BG_COLOR,
   TEXT_COLOR,
@@ -19,7 +19,7 @@ import CustomTextInput from '../components/CustomTextInput';
 import LinearGradient from 'react-native-linear-gradient';
 import {BASE_URL, LOGIN_USER} from '../utils/Strings';
 import Loader from '../components/Loader';
-import {useNavigation} from '@react-navigation/native';
+import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import axios from 'axios';
 import {useDispatch} from 'react-redux';
 import {setAuthData} from '../redux/AuthSlice';
@@ -30,12 +30,20 @@ const Login = () => {
   const [badEmail, setBadEmail] = useState('');
   const [badPassword, setBadPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [hidePass, setHidePass] = useState(true);
   const navigation = useNavigation();
   const dispatch = useDispatch();
 
   const toast = msg => {
     return ToastAndroid.show(msg, ToastAndroid.LONG, ToastAndroid.CENTER);
   };
+
+  useFocusEffect(
+    useCallback(() => {
+      setEmail('');
+      setPassword('');
+    }, []),
+  );
 
   const validate = () => {
     let isValid = false;
@@ -94,19 +102,19 @@ const Login = () => {
     })
       .then(res => res.json())
       .then(json => {
-          setLoading(false);
-          if(!json.status){
-            if(json.message == "Wrong Password"){
-              setBadPassword(json.message)
-            }else{
-              setBadEmail(json.message)
-            }
-          }else{
-            dispatch(setAuthData(json))
-            navigation.navigate('Main');
-            toast('Login Successful');
+        setLoading(false);
+        if (!json.status) {
+          if (json.message == 'Wrong Credential') {
+            setBadPassword(json.message);
+          } else {
+            setBadEmail(json.message);
           }
-          console.log("login json--------", json);
+        } else {
+          dispatch(setAuthData(json));
+          navigation.navigate('Main');
+          toast('Login Successful');
+        }
+        console.log('login json--------', json);
       })
       .catch(err => {
         setLoading(false);
@@ -161,6 +169,7 @@ const Login = () => {
 
       <CustomTextInput
         placeHolder={'Enter Email'}
+        placeholderTextColor={'#888'}
         value={email}
         onChangeText={txt => setEmail(txt)}
         isValid={badEmail == '' ? true : false}
@@ -168,13 +177,35 @@ const Login = () => {
       {badEmail != '' && <Text style={styles.errorText}>{badEmail}</Text>}
 
       <CustomTextInput
+        style={{width: '92%', color:"#000"}}
         placeHolder={'Enter Password'}
-        type={"password"}
+        placeholderTextColor={'#888'}
+        type={hidePass}
         value={password}
         onChangeText={txt => setPassword(txt)}
         isValid={badPassword == '' ? true : false}
+        child2={
+          <TouchableOpacity
+            onPress={() => setHidePass(!hidePass)}
+            // style={{right: 25}}
+            >
+            {hidePass ? (
+              <Image
+                source={require('../images/eye_close.png')}
+                style={{width: 20, height: 20}}
+              />
+            ) : (
+              <Image
+                source={require('../images/eye.png')}
+                style={{width: 20, height: 20}}
+              />
+            )}
+          </TouchableOpacity>
+        }
       />
-      {badPassword != '' && badPassword != "Wrong password" && <Text style={styles.errorText}>{badPassword}</Text>}
+      {badPassword != '' && badPassword != 'Wrong password' && (
+        <Text style={styles.errorText}>{badPassword}</Text>
+      )}
 
       <LinearGradient colors={[THEME_COLOR2, THEME_COLOR]} style={styles.btn}>
         <TouchableOpacity

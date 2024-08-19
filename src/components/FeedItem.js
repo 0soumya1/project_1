@@ -66,14 +66,15 @@ const FeedItem = ({
       style={[styles.feed, {marginBottom: list.length - 1 == index ? 100 : 0}]}>
       <View style={styles.topView}>
         <View style={styles.topLeft}>
-         <TouchableOpacity onPress={()=>{
-          navigation.navigate("UserProfile", {id: data.item.userId})
-         }}>
-         <Image
-            source={require('../images/profile.png')}
-            style={styles.profile}
-          />
-         </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate('UserProfile', {id: data.item.userId});
+            }}>
+            <Image
+              source={require('../images/profile.png')}
+              style={styles.profile}
+            />
+          </TouchableOpacity>
           <View>
             <Text style={styles.userName}>{data.item.userName}</Text>
             <Text style={styles.time}>
@@ -98,7 +99,9 @@ const FeedItem = ({
             onPress={() => {
               onFollow();
             }}>
-            <Text style={{color: 'white'}}>{isFollowed ? "Unfollow":"Follow"}</Text>
+            <Text style={{color: 'white'}}>
+              {isFollowed ? 'Unfollow' : 'Follow'}
+            </Text>
           </TouchableOpacity>
         )}
       </View>
@@ -109,40 +112,38 @@ const FeedItem = ({
         <Image source={{uri: data.item.imageUrl}} style={styles.image} />
       )}
       <View style={styles.bottomView}>
-        <View style={{flexDirection: 'row', alignItems: 'center'}}>
-          <TouchableOpacity
-            onPress={() => {
-              onClickLike();
-            }}>
-            <Image
-              source={
-                checkLiked()
-                  ? require('../images/liked.png')
-                  : require('../images/like.png')
-              }
-              style={[
-                styles.icon,
-                {tintColor: checkLiked() ? THEME_COLOR2 : 'black'},
-              ]}
-            />
-          </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => {
+            onClickLike();
+          }}
+          style={{flexDirection: 'row', alignItems: 'center'}}>
+          <Image
+            source={
+              checkLiked()
+                ? require('../images/liked.png')
+                : require('../images/like.png')
+            }
+            style={[
+              styles.icon,
+              {tintColor: checkLiked() ? THEME_COLOR2 : 'black'},
+            ]}
+          />
           <Text style={styles.count}>{data.item.likes.length + ' Likes'}</Text>
-        </View>
+        </TouchableOpacity>
 
-        <View style={{flexDirection: 'row', alignItems: 'center'}}>
-          <TouchableOpacity
-            onPress={() => {
-              navigation.navigate('Comments', {id: data.item._id});
-            }}>
-            <Image
-              source={require('../images/comment.png')}
-              style={styles.icon}
-            />
-          </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => {
+            navigation.navigate('Comments', {id: data.item._id});
+          }}
+          style={{flexDirection: 'row', alignItems: 'center'}}>
+          <Image
+            source={require('../images/comment.png')}
+            style={styles.icon}
+          />
           <Text style={styles.count}>
             {data.item.comments.length + ' Comments'}
           </Text>
-        </View>
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -191,7 +192,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     marginTop: 5,
     // fontWeight:"600",
-    // color:"black"
+    color: 'black',
   },
   icon: {
     width: 24,
@@ -217,7 +218,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-evenly',
     alignItems: 'center',
     marginTop: 20,
-    marginBottom: 10,
+    // marginBottom: 10,
   },
   count: {
     color: 'black',

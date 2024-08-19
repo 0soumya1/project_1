@@ -1,4 +1,4 @@
-import {View, Text, StyleSheet, FlatList} from 'react-native';
+import {View, Text, StyleSheet, FlatList, BackHandler, Alert} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {
   BASE_URL,
@@ -10,13 +10,14 @@ import {
   USER_PROFILE,
 } from '../../utils/Strings';
 import FeedItem from '../../components/FeedItem';
-import {useIsFocused} from '@react-navigation/native';
+import {useIsFocused, useNavigation} from '@react-navigation/native';
 import OptionModal from '../../components/OptionModal';
 import Loader from '../../components/Loader';
 import UpdateModal from '../../components/UpdateModal';
 import {useSelector} from 'react-redux';
 
 const Feeds = () => {
+  const navigation = useNavigation();
   const [feeds, setFeeds] = useState([]);
   const isfocused = useIsFocused();
   const [openOptions, setOpenOptions] = useState(false);
@@ -31,20 +32,50 @@ const Feeds = () => {
     getProfileData();
   }, [isfocused]);
 
+  useEffect(() => {
+    const backAction = () => {
+      if (navigation.canGoBack()) {
+        navigation.goBack();
+        return true; // Prevent default behavior (exit app)
+      } else {
+        Alert.alert('Hold on!', 'Are you sure you want to exit the app?', [
+          {
+            text: 'Cancel',
+            onPress: () => null,
+            style: 'cancel',
+          },
+          {text: 'YES', onPress: () => BackHandler.exitApp()},
+        ]);
+        return true; // Prevent default behavior (exit app)
+      }
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction,
+    );
+
+    return () => backHandler.remove(); // Clean up the event listener
+  }, [navigation]);
+
   const getData = () => {
+    setLoading(true);
     fetch(BASE_URL + FEEDS)
       .then(res => res.json())
       .then(json => {
         json.data.reverse();
+        setLoading(false);
         setFeeds(json.data);
         // console.log('get data json-----', json);
       });
   };
 
   const getProfileData = () => {
+    setLoading(true);
     fetch(BASE_URL + USER_PROFILE + authData.data.data._id)
       .then(res => res.json())
       .then(json => {
+        setLoading(false);
         setUserData(json.data);
         // console.log('profile data json-----', json);
       });

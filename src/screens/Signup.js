@@ -8,7 +8,7 @@ import {
   ToastAndroid,
   ScrollView,
 } from 'react-native';
-import React, {useState} from 'react';
+import React, {useCallback, useState} from 'react';
 import {
   BG_COLOR,
   TEXT_COLOR,
@@ -20,7 +20,7 @@ import CustomTextInput from '../components/CustomTextInput';
 import LinearGradient from 'react-native-linear-gradient';
 import {BASE_URL, REGISTER_USER} from '../utils/Strings';
 import Loader from '../components/Loader';
-import {useNavigation} from '@react-navigation/native';
+import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import axios from 'axios';
 import {useDispatch} from 'react-redux';
 import {setAuthData} from '../redux/AuthSlice';
@@ -36,6 +36,7 @@ const Signup = () => {
   const [badMobile, setBadMobile] = useState('');
   const [selectedGender, setSelectedGender] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [hidePass, setHidePass] = useState(true);
   const navigation = useNavigation();
   const dispatch = useDispatch();
 
@@ -43,8 +44,25 @@ const Signup = () => {
     return ToastAndroid.show(msg, ToastAndroid.LONG, ToastAndroid.CENTER);
   };
 
+  useFocusEffect(
+    useCallback(() => {
+      setName('')
+      setEmail('');
+      setMobile('')
+      setPassword('');
+    }, []),
+  );
+
   const validate = () => {
     let isValid = false;
+    if (name == '') {
+      setBadName('Please Enter Name');
+      isValid = false;
+    } else if (name != '') {
+      setBadName('');
+      isValid = true;
+    }
+
     if (email == '') {
       setBadEmail('Please Enter Email');
       isValid = false;
@@ -70,29 +88,13 @@ const Signup = () => {
       isValid = true;
     }
 
-    if (password == '') {
-      setBadPassword('Please Enter Password');
-      isValid = false;
-    } else if (password != '' && password.length < 2) {
-      setBadPassword('Please Enter Min 2 Characters Password');
-      isValid = false;
-    } else if (password != '' && password.length > 1) {
-      setBadPassword('');
-      isValid = true;
-    }
-
-    if (name == '') {
-      setBadName('Please Enter Name');
-      isValid = false;
-    } else if (name != '') {
-      setBadName('');
-      isValid = true;
-    }
-
     if (mobile == '') {
       setBadMobile('Please Enter Mobile');
       isValid = false;
     } else if (mobile != '' && mobile.length < 10) {
+      setBadMobile('Please Enter Valid Mobile Number');
+      isValid = false;
+    } else if (mobile != '' && mobile.length > 10) {
       setBadMobile('Please Enter Valid Mobile Number');
       isValid = false;
     } else if (mobile != '' && mobile.length == 10) {
@@ -100,6 +102,17 @@ const Signup = () => {
       isValid = true;
     }
 
+    if (password == '') {
+      setBadPassword('Please Enter Password');
+      isValid = false;
+    } else if (password != '' && password.length < 2) {
+      setBadPassword('Please Enter Min 2 Characters Password');
+      isValid = false;
+    } else if (password != '' && password.length >= 2) {
+      setBadPassword('');
+      isValid = true;
+    }
+    
     return isValid;
   };
 
@@ -157,7 +170,7 @@ const Signup = () => {
           dispatch(setAuthData(json));
           navigation.navigate('Main');
           toast('SignUp Successful');
-          console.log("signup json-----------", json)
+          console.log('signup json-----------', json);
         }
       })
       .catch(err => {
@@ -249,6 +262,7 @@ const Signup = () => {
 
         <CustomTextInput
           placeHolder={'Enter Name'}
+          placeholderTextColor={'#888'}
           value={name}
           onChangeText={txt => setName(txt)}
           isValid={badName == '' ? true : false}
@@ -257,6 +271,7 @@ const Signup = () => {
 
         <CustomTextInput
           placeHolder={'Enter Email'}
+          placeholderTextColor={'#888'}
           value={email}
           onChangeText={txt => setEmail(txt)}
           isValid={badEmail == '' ? true : false}
@@ -265,6 +280,7 @@ const Signup = () => {
 
         <CustomTextInput
           placeHolder={'Enter Mobile'}
+          placeholderTextColor={'#888'}
           value={mobile}
           onChangeText={txt => setMobile(txt)}
           keyboardType={'number-pad'}
@@ -273,11 +289,31 @@ const Signup = () => {
         {badMobile != '' && <Text style={styles.errorText}>{badMobile}</Text>}
 
         <CustomTextInput
+          style={{width: '92%', color: '#000'}}
           placeHolder={'Enter Password'}
-          type={"password"}
+          placeholderTextColor={'#888'}
+          type={hidePass}
           value={password}
           onChangeText={txt => setPassword(txt)}
           isValid={badPassword == '' ? true : false}
+          child2={
+            <TouchableOpacity
+              onPress={() => setHidePass(!hidePass)}
+              // style={{right: 25}}
+            >
+              {hidePass ? (
+                <Image
+                  source={require('../images/eye_close.png')}
+                  style={{width: 20, height: 20}}
+                />
+              ) : (
+                <Image
+                  source={require('../images/eye.png')}
+                  style={{width: 20, height: 20}}
+                />
+              )}
+            </TouchableOpacity>
+          }
         />
         {badPassword != '' && (
           <Text style={styles.errorText}>{badPassword}</Text>

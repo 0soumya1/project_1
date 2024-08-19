@@ -15,6 +15,7 @@ const CommentItem = ({data, onClickOption}) => {
         backgroundColor: 'white',
         alignSelf: 'center',
         marginTop: 20,
+        borderRadius:10,
       }}>
       <View
         style={{
@@ -34,7 +35,7 @@ const CommentItem = ({data, onClickOption}) => {
             <Text style={{fontSize: 16, color: 'black', fontWeight: '500'}}>
               {data.item.userName}
             </Text>
-            <Text style={{fontSize: 12}}>
+            <Text style={{fontSize: 12, color:"#000"}}>
               {timeDifference(new Date(data.item.createdAt))}
             </Text>
           </View>

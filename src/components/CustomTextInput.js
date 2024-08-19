@@ -2,6 +2,7 @@ import {View, Text, TextInput} from 'react-native';
 import React from 'react';
 
 const CustomTextInput = ({
+  props,
   mt,
   placeHolder,
   onChangeText,
@@ -9,6 +10,9 @@ const CustomTextInput = ({
   keyboardType,
   value,
   type,
+  placeholderTextColor,
+  child2,
+  style
 }) => {
   return (
     <View
@@ -23,15 +27,18 @@ const CustomTextInput = ({
         flexDirection: 'row',
         alignItems: 'center',
         paddingLeft: 5,
+        
       }}>
       <TextInput
-        style={{ width:'100%'}}
+        style={ style ? style : {width:'98%', color:"#000"}}
         placeholder={placeHolder}
+        placeholderTextColor={placeholderTextColor}
         onChangeText={txt => onChangeText(txt)}
         value={value}
         keyboardType={keyboardType ? keyboardType: "default"}
         secureTextEntry={type ? true : false}
       />
+      {child2 && <>{child2}</>}
     </View>
   );
 };

@@ -8,6 +8,7 @@ import {
   Keyboard,
   Modal,
   ScrollView,
+  TouchableWithoutFeedback,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {BG_COLOR, THEME_COLOR2} from '../utils/Colors';
@@ -111,7 +112,7 @@ const Comments = () => {
   };
 
   const updateComment = () => {
-    setLoading(true)
+    setLoading(true);
     const myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
 
@@ -119,7 +120,7 @@ const Comments = () => {
       comment: newComment,
       userId: authData.data.data._id,
       userName: authData.data.data.name,
-      postId: route.params.id
+      postId: route.params.id,
     });
 
     fetch(BASE_URL + UPDATE_COMMENT + selectedItem.item._id, {
@@ -140,27 +141,28 @@ const Comments = () => {
   };
   return (
     <View style={styles.container}>
-     <ScrollView style={{flex:1, marginBottom:80}}>
-      <FlatList
-        data={commentList}
-        renderItem={(item, index) => {
-          return (
-            <CommentItem
-              data={item}
-              onClickOption={() => {
-                setSelectedItem(item);
-                setOpenCommentOptions(true);
-              }}
-            />
-          );
-        }}
-      />
-          </ScrollView>
+      <ScrollView style={{flex: 1, marginBottom: 80}}>
+        <FlatList
+          data={commentList}
+          renderItem={(item, index) => {
+            return (
+              <CommentItem
+                data={item}
+                onClickOption={() => {
+                  setSelectedItem(item);
+                  setOpenCommentOptions(true);
+                }}
+              />
+            );
+          }}
+        />
+      </ScrollView>
       <View style={styles.bottomNav}>
         <TextInput
           value={comment}
           onChangeText={txt => setComment(txt)}
           placeholder="Type Comment Here....."
+          placeholderTextColor={'#888'}
           style={styles.input}
         />
         <TouchableOpacity
@@ -190,36 +192,43 @@ const Comments = () => {
           }
         }}
       />
- 
-      <Modal transparent visible={openUpdateCommentModal}>
-        <View style={styles.modalView}>
-          <View style={styles.mainView}>
-            <Text style={styles.titleComment}>Edit Comment</Text>
-            <TextInput
-              value={newComment}
-              onChangeText={txt => setNewComment(txt)}
-              style={styles.commentInput}
-              placeholder="Type comment here..."
-            />
-            <View style={styles.commentBottomView}>
-              <TouchableOpacity
-                style={styles.cancelBtn}
-                onPress={() => {
-                  setOpenUpdateCommentModal(false);
-                }}>
-                <Text style={styles.btnText}>Cancel</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.saveBtn}
-                onPress={() => {
-                  setOpenUpdateCommentModal(false);
-                  updateComment();
-                }}>
-                <Text style={styles.btnText}>Update</Text>
-              </TouchableOpacity>
+
+      <Modal transparent={true} visible={openUpdateCommentModal}>
+        <TouchableOpacity
+          style={styles.modalView}
+          onPress={() => {
+            setOpenUpdateCommentModal(false);
+          }}>
+          <TouchableWithoutFeedback>
+            <View style={styles.mainView}>
+              <Text style={styles.titleComment}>Edit Comment</Text>
+              <TextInput
+                value={newComment}
+                onChangeText={txt => setNewComment(txt)}
+                style={styles.commentInput}
+                placeholder="Type comment here..."
+                placeholderTextColor={'#888'}
+              />
+              <View style={styles.commentBottomView}>
+                <TouchableOpacity
+                  style={styles.cancelBtn}
+                  onPress={() => {
+                    setOpenUpdateCommentModal(false);
+                  }}>
+                  <Text style={styles.btnText}>Cancel</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.saveBtn}
+                  onPress={() => {
+                    setOpenUpdateCommentModal(false);
+                    updateComment();
+                  }}>
+                  <Text style={styles.btnText}>Update</Text>
+                </TouchableOpacity>
+              </View>
             </View>
-          </View>
-        </View>
+          </TouchableWithoutFeedback>
+        </TouchableOpacity>
       </Modal>
       <Loader visible={loading} />
     </View>
@@ -248,6 +257,7 @@ const styles = StyleSheet.create({
   input: {
     width: '70%',
     height: '100%',
+    color: '#000',
   },
   postBtn: {
     width: '25%',
@@ -287,6 +297,7 @@ const styles = StyleSheet.create({
     paddingLeft: 20,
     alignSelf: 'center',
     marginTop: 20,
+    color: '#000',
   },
   commentBottomView: {
     width: '90%',

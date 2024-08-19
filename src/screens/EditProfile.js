@@ -223,12 +223,14 @@ const EditProfile = () => {
       <Text style={styles.heading}>Change Other Details</Text>
       <CustomTextInput
         placeHolder={'Enter Name'}
+        placeholderTextColor={'#888'}
         value={name}
         onChangeText={txt => setName(txt)}
         isValid={badName == '' ? true : false}
       />
       <CustomTextInput
         placeHolder={'Enter Mobile'}
+        placeholderTextColor={'#888'}
         value={mobile}
         onChangeText={txt => setMobile(txt)}
         keyboardType={'number-pad'}
@@ -236,12 +238,14 @@ const EditProfile = () => {
       />
       <CustomTextInput
         placeHolder={'Enter Bio'}
+        placeholderTextColor={'#888'}
         value={bio}
         onChangeText={txt => setBio(txt)}
         isValid={true}
       />
       <CustomTextInput
         placeHolder={'Enter Address'}
+        placeholderTextColor={'#888'}
         value={address}
         onChangeText={txt => setAddress(txt)}
         isValid={true}
@@ -249,7 +253,7 @@ const EditProfile = () => {
       <TouchableOpacity style={styles.updateBtn} onPress={()=>{
         updateChanges()
       }}>
-        <Text style={{fontSize: 16, color: 'white'}}>Save Changes</Text>
+        <Text style={{fontSize: 16, color: 'white'}}>Save</Text>
       </TouchableOpacity>
       <Loader visible={loading} />
     </ScrollView>

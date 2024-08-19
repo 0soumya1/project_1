@@ -92,6 +92,7 @@ const AddPost = () => {
           onChangeText={txt => setCaption(txt)}
           ref={ref}
           placeholder="Type caption here...."
+          placeholderTextColor={'#888'}
           style={styles.input}
         />
       </TouchableOpacity>
@@ -170,6 +171,7 @@ const styles = StyleSheet.create({
   },
   input: {
     width: '100%',
+    color:"#000"
   },
   pickerBtn: {
     width: '90%',
@@ -188,6 +190,7 @@ const styles = StyleSheet.create({
   pickerTitle: {
     marginLeft: 14,
     fontSize: 14,
+    color:"#000"
   },
   selectedImageView: {
     width: '90%',

@@ -6,6 +6,8 @@ import {
   TouchableOpacity,
   FlatList,
   ScrollView,
+  BackHandler,
+  Alert,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {useIsFocused, useNavigation} from '@react-navigation/native';
@@ -37,13 +39,41 @@ const Profile = () => {
   const [openUpdateModal, setOpenUpdateModal] = useState(false);
 
   useEffect(() => {
+    const backAction = () => {
+      if (navigation.canGoBack()) {
+        navigation.goBack();
+        return true; // Prevent default behavior (exit app)
+      } else {
+        Alert.alert('Hold on!', 'Are you sure you want to exit the app?', [
+          {
+            text: 'Cancel',
+            onPress: () => null,
+            style: 'cancel',
+          },
+          {text: 'YES', onPress: () => BackHandler.exitApp()},
+        ]);
+        return true; // Prevent default behavior (exit app)
+      }
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction,
+    );
+
+    return () => backHandler.remove(); // Clean up the event listener
+  }, [navigation]);
+
+  useEffect(() => {
     getProfileData();
   }, [isfocused]);
 
   const getProfileData = () => {
+    // setLoading(true);
     fetch(BASE_URL + USER_PROFILE + authData.data.data._id)
       .then(res => res.json())
       .then(json => {
+        // setLoading(false);
         setUserData(json.data);
         getData(json.data._id);
         // console.log('json-----', json);
@@ -51,10 +81,12 @@ const Profile = () => {
   };
 
   const getData = id => {
+    setLoading(true);
     fetch(BASE_URL + FEEDS + '/' + id)
       .then(res => res.json())
       .then(json => {
         json.data.reverse();
+        setLoading(false);
         setFeeds(json.data);
         // console.log('get data json-----', json);
       });
