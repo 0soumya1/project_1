@@ -33,30 +33,28 @@ const Feeds = () => {
   }, [isfocused]);
 
   useEffect(() => {
-    const backAction = () => {
-      if (navigation.canGoBack()) {
-        navigation.goBack();
-        return true; // Prevent default behavior (exit app)
-      } else {
-        Alert.alert('Hold on!', 'Are you sure you want to exit the app?', [
-          {
-            text: 'Cancel',
-            onPress: () => null,
-            style: 'cancel',
-          },
-          {text: 'YES', onPress: () => BackHandler.exitApp()},
-        ]);
-        return true; // Prevent default behavior (exit app)
-      }
+    // Function to handle the back button press
+    const onBackPress = () => {
+      // Show an alert before exiting the app or navigating
+      Alert.alert(
+        'Hold on!', 'Are you sure you want to exit the app?',
+        [
+          { text: 'Cancel', style: 'cancel', onPress: () => null },
+          { text: 'Yes', onPress: () => BackHandler.exitApp() }, // Exit the app
+        ],
+        { cancelable: false }
+      );
+      return true; // Prevent default behavior (like navigating back)
     };
 
-    const backHandler = BackHandler.addEventListener(
-      'hardwareBackPress',
-      backAction,
-    );
+    // Add back button event listener
+    BackHandler.addEventListener('hardwareBackPress', onBackPress);
 
-    return () => backHandler.remove(); // Clean up the event listener
-  }, [navigation]);
+    // Cleanup the event listener when the component is unmounted
+    return () => {
+      BackHandler.removeEventListener('hardwareBackPress', onBackPress);
+    };
+  }, []);
 
   const getData = () => {
     setLoading(true);

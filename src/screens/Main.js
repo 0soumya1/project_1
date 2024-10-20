@@ -11,14 +11,29 @@ import {THEME_COLOR, THEME_COLOR2, THEME_COLOR3} from '../utils/Colors';
 import {useNavigation} from '@react-navigation/native';
 import Feeds from './tabs/Feeds';
 import Profile from './tabs/Profile';
+import LogoutModal from "../components/LogoutModal"
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Main = () => {
   const [selectedTab, setSelectedTab] = useState(0);
   const navigation = useNavigation();
+  const [isOpenLogoutModal, setIsOpenLogoutModal] = useState(false);
 
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={styles.title}>Social</Text>
+      <View style={styles.header}>
+        <Text style={styles.title}>Social</Text>
+        <TouchableOpacity
+          onPress={() => {
+            setIsOpenLogoutModal(true);
+          }}>
+          <Image
+            style={styles.logoutView}
+            source={selectedTab == 1 ? require('../images/logout.png') : null}
+          />
+        </TouchableOpacity>
+      </View>
+
       {selectedTab == 0 ? <Feeds /> : <Profile />}
       <View style={styles.bottomNav}>
         <TouchableOpacity
@@ -63,6 +78,20 @@ const Main = () => {
           />
         </TouchableOpacity>
       </View>
+      <LogoutModal
+        onRequestClose={() => setIsOpenLogoutModal(false)}
+        onPressLeftButton={() => setIsOpenLogoutModal(false)}
+        onPressRightButton={async () => {
+          await AsyncStorage.clear();
+          setIsOpenLogoutModal(false);
+          navigation.navigate('Login');
+        }}
+        visible={isOpenLogoutModal}
+        rightButtonText={'Yes'}
+        leftButtonText={'No'}
+        modelTitle={'Logout Account !'}
+        description={'Do you really want to Logout ?'}
+      />
     </SafeAreaView>
   );
 };
@@ -70,6 +99,17 @@ const Main = () => {
 export default Main;
 
 const styles = StyleSheet.create({
+  logoutView: {
+    width: 33,
+    height: 33,
+    tintColor: THEME_COLOR2,
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+  },
   container: {
     flex: 1,
     backgroundColor: '#fff',
@@ -78,7 +118,7 @@ const styles = StyleSheet.create({
     color: THEME_COLOR2,
     fontWeight: '700',
     fontSize: 25,
-    marginLeft: 20,
+    // marginLeft: 20,
     marginTop: 10,
     marginBottom: 10,
   },

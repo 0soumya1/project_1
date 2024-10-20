@@ -195,7 +195,7 @@ const UserProfile = () => {
         </View>
 
         <View style={styles.countView}>
-          <Text style={styles.values}>{0}</Text>
+          <Text style={styles.values}>{feeds?.length}</Text>
           <Text style={styles.title}>{'Posts'}</Text>
         </View>
       </View>
