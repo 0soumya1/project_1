@@ -30,7 +30,6 @@ const Profile = () => {
   const navigation = useNavigation();
   const isfocused = useIsFocused();
   const authData = useSelector(state => state.auth);
-  // console.log("authDATA---", authData)
   const [userData, setUserData] = useState(null);
   const [feeds, setFeeds] = useState([]);
   const [openOptions, setOpenOptions] = useState(false);
@@ -43,12 +42,13 @@ const Profile = () => {
     const onBackPress = () => {
       // Show an alert before exiting the app or navigating
       Alert.alert(
-        'Hold on!', 'Are you sure you want to exit the app?',
+        'Hold on!',
+        'Are you sure you want to exit the app?',
         [
-          { text: 'Cancel', style: 'cancel', onPress: () => null },
-          { text: 'Yes', onPress: () => BackHandler.exitApp() }, // Exit the app
+          {text: 'Cancel', style: 'cancel', onPress: () => null},
+          {text: 'Yes', onPress: () => BackHandler.exitApp()}, // Exit the app
         ],
-        { cancelable: false }
+        {cancelable: false},
       );
       return true; // Prevent default behavior (like navigating back)
     };
@@ -179,12 +179,15 @@ const Profile = () => {
         {userData != null && userData.profilePic != '' ? (
           <Image
             source={{uri: userData.profilePic}}
-            style={[styles.profile, {width: '100%', height: '100%', borderRadius:50}]}
+            style={[
+              styles.profile,
+              {width: '100%', height: '100%', borderRadius: 50},
+            ]}
           />
         ) : (
           <Image
             source={require('../../images/user1.png')}
-            style={[styles.profile, {tintColor:"white"}]}
+            style={[styles.profile, {tintColor: 'white'}]}
           />
         )}
       </View>
@@ -260,7 +263,7 @@ const Profile = () => {
           }
         }}
       />
-     
+
       <UpdateModal
         data={selectedItem}
         visible={openUpdateModal}
@@ -272,7 +275,7 @@ const Profile = () => {
           updatePost(x);
         }}
       />
-       <Loader visible={loading} />
+      <Loader visible={loading} />
     </ScrollView>
   );
 };
@@ -282,7 +285,7 @@ export default Profile;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginBottom:100,
+    marginBottom: 100,
   },
   profileView: {
     width: 100,

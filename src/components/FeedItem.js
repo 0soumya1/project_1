@@ -47,9 +47,10 @@ const FeedItem = ({
 }) => {
   const authData = useSelector(state => state.auth);
   const navigation = useNavigation();
+  // const commentData = useSelector(state => state.comment);
 
-  // console.log('data----', data);
-  // console.log("listttttttttt----------", list)
+  // console.log('feed data----', data);
+  // console.log('commentData----------', commentData);
 
   const checkLiked = () => {
     let isLiked = false;
@@ -141,7 +142,8 @@ const FeedItem = ({
             style={styles.icon}
           />
           <Text style={styles.count}>
-            {data.item.comments.length + ' Comments'}
+            {/* {data.item.comments.length + ' Comments'} */}
+            {'Comments'}
           </Text>
         </TouchableOpacity>
       </View>

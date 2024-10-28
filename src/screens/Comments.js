@@ -19,11 +19,12 @@ import {
   GET_COMMENTS,
   UPDATE_COMMENT,
 } from '../utils/Strings';
-import {useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {useRoute} from '@react-navigation/native';
 import Loader from '../components/Loader';
 import CommentItem from '../components/CommentItem';
 import CommentOptionModal from '../components/CommentOptionModal';
+import {setCommentData} from '../redux/CommentSlice';
 
 const Comments = () => {
   const [comment, setComment] = useState('');
@@ -35,6 +36,7 @@ const Comments = () => {
   const [selectedItem, setSelectedItem] = useState(null);
   const [newComment, setNewComment] = useState('');
   const [openUpdateCommentModal, setOpenUpdateCommentModal] = useState(false);
+  const dispatch = useDispatch();
 
   const postComment = () => {
     setLoading(true);
@@ -84,6 +86,8 @@ const Comments = () => {
       .then(json => {
         console.log('GET ALL COMMENTS json---------------', json);
         setCommentList(json.data);
+        // dispatch(setCommentData(json?.data));
+        // console.log('json?.data------', json?.data);
       })
       .catch(err => {
         console.log('err', err);

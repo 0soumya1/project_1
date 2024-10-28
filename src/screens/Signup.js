@@ -46,120 +46,82 @@ const Signup = () => {
 
   useFocusEffect(
     useCallback(() => {
-      setName('')
+      setName('');
       setEmail('');
-      setMobile('')
+      setMobile('');
       setPassword('');
     }, []),
   );
 
+  const regEmail1 =
+    /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
+  const regEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
   const validate = () => {
     let isValid = false;
-    if (name == '') {
+    if (!name) {
       setBadName('Please Enter Name');
       isValid = false;
-    } else if (name != '') {
+    } else {
       setBadName('');
       isValid = true;
     }
 
-    if (email == '') {
+    // if (!email) {
+    //   setBadEmail('Please Enter Email');
+    //   isValid = false;
+    // } else if (email && !email.toLowerCase().match(regEmail)) {
+    //   setBadEmail('Please Enter Valid Email');
+    //   isValid = false;
+    // } else if (email && email.toLowerCase().match(regEmail)) {
+    //   setBadEmail('');
+    //   isValid = true;
+    // }
+    if (!email) {
       setBadEmail('Please Enter Email');
       isValid = false;
-    } else if (
-      email != '' &&
-      !email
-        .toLowerCase()
-        .match(
-          /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
-        )
-    ) {
-      setBadEmail('Please Enter Valid Email');
-      isValid = false;
-    } else if (
-      email != '' &&
-      email
-        .toLowerCase()
-        .match(
-          /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
-        )
-    ) {
+    } else {
       setBadEmail('');
       isValid = true;
     }
 
-    if (mobile == '') {
+    if (!mobile) {
       setBadMobile('Please Enter Mobile');
       isValid = false;
-    } else if (mobile != '' && mobile.length < 10) {
-      setBadMobile('Please Enter Valid Mobile Number');
-      isValid = false;
-    } else if (mobile != '' && mobile.length > 10) {
-      setBadMobile('Please Enter Valid Mobile Number');
-      isValid = false;
-    } else if (mobile != '' && mobile.length == 10) {
+    } else {
       setBadMobile('');
       isValid = true;
     }
 
-    if (password == '') {
+    if (!password) {
       setBadPassword('Please Enter Password');
       isValid = false;
-    } else if (password != '' && password.length < 2) {
-      setBadPassword('Please Enter Min 2 Characters Password');
-      isValid = false;
-    } else if (password != '' && password.length >= 2) {
+    } else {
       setBadPassword('');
       isValid = true;
     }
-    
     return isValid;
   };
 
   const signUp = async () => {
     setLoading(true);
-    console.log('signup-----', name + ' ' + email + ' ' + password);
 
     const myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
 
-    // var raw = JSON.stringify({
-    //   name: name,
-    //   emailId: email,
-    //   mobile: mobile,
-    //   password: password,
-    //   gender: selectedGender == 0 ? 'male' : 'female',
-    // });
+    let data = {
+      name: name,
+      emailId: email,
+      mobile: mobile,
+      password: password,
+      gender: selectedGender == 0 ? 'male' : 'female',
+    };
 
-    // var requestOptions = {
-    //   method: 'POST',
-    //   headers: myHeaders,
-    //   body: raw,
-    //   redirect: 'follow',
-    // };
-
-    // fetch(
-    //   'https://backend-social-app-kappa.vercel.app/socialapp/api/auth/register',
-    //   requestOptions,
-    // )
-    //   .then(response => response.text())
-    //   .then(result => {
-    //     setLoading(false);
-    //     dispatch(setAuthData(result));
-    //     navigation.navigate('AddPost');
-    //     toast('SignUp Successful');
-    //     console.log('result---------------', result);
-    //   })
-    //   .catch(error => console.log('error', error));
+    console.log('signup data', data);
 
     fetch(BASE_URL + REGISTER_USER, {
-      body: JSON.stringify({
-        name: name,
-        emailId: email,
-        mobile: mobile,
-        password: password,
-        gender: selectedGender == 0 ? 'male' : 'female',
-      }),
+      body: JSON.stringify(data),
       method: 'POST',
       headers: myHeaders,
     })
@@ -171,12 +133,14 @@ const Signup = () => {
           navigation.navigate('Main');
           toast('SignUp Successful');
           console.log('signup json-----------', json);
+        } else {
+          console.log('json err signup');
         }
       })
       .catch(err => {
         setLoading(false);
         toast('api signup err');
-        console.log(err);
+        console.log('catch signup err', err);
       });
 
     // let data = {
@@ -205,45 +169,6 @@ const Signup = () => {
     //   toast('api err');
     //   setLoading(false);
     // });
-
-    // let data = JSON.stringify({
-    //   name: name,
-    //   emailId: email,
-    //   mobile: mobile,
-    //   password: password,
-    //   gender: selectedGender == 0 ? 'male' : 'female',
-    // });
-    // console.log('dataatata-------', data);
-
-    // let config = {
-    //   method: 'post',
-    //   // maxBodyLength: Infinity,
-    //   url: BASE_URL + REGISTER_USER,
-    //   headers: {
-    //     'Content-Type': 'application/json',
-    //   },
-    //   data: data,
-    // };
-
-    // console.log('configggg111', config);
-
-    // axios
-    //   .request(config)
-    //   .then(response => {
-    //     setLoading(false);
-    //     dispatch(setAuthData(response.data));
-    //     navigation.navigate('Main');
-    //     toast('Signup Successful');
-    //     console.log(
-    //       'ressssssssssssssssssssssss',
-    //       JSON.stringify(response.data),
-    //     );
-    //   })
-    //   .catch(error => {
-    //     toast('api err');
-    //     setLoading(false);
-    //     console.log('errrrrrrrrr', error);
-    //   });
   };
 
   return (
@@ -355,6 +280,8 @@ const Signup = () => {
             onPress={() => {
               if (validate()) {
                 signUp();
+              } else {
+                console.log('validate failed');
               }
             }}>
             <Text style={{color: BG_COLOR, fontSize: 17, fontWeight: '600'}}>

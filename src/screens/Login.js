@@ -6,6 +6,7 @@ import {
   Dimensions,
   TouchableOpacity,
   ToastAndroid,
+  ScrollView,
 } from 'react-native';
 import React, {useCallback, useState} from 'react';
 import {
@@ -47,27 +48,11 @@ const Login = () => {
 
   const validate = () => {
     let isValid = false;
-    if (email == '') {
+
+    if (!email) {
       setBadEmail('Please Enter Email');
       isValid = false;
-    } else if (
-      email != '' &&
-      !email
-        .toLowerCase()
-        .match(
-          /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
-        )
-    ) {
-      setBadEmail('Please Enter Valid Email');
-      isValid = false;
-    } else if (
-      email != '' &&
-      email
-        .toLowerCase()
-        .match(
-          /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
-        )
-    ) {
+    } else {
       setBadEmail('');
       isValid = true;
     }
@@ -75,10 +60,7 @@ const Login = () => {
     if (password == '') {
       setBadPassword('Please Enter Password');
       isValid = false;
-    } else if (password != '' && password.length < 2) {
-      setBadPassword('Please Enter Min 2 Characters Password');
-      isValid = false;
-    } else if (password != '' && password.length > 1) {
+    } else {
       setBadPassword('');
       isValid = true;
     }
@@ -87,152 +69,115 @@ const Login = () => {
 
   const login = async () => {
     setLoading(true);
-    console.log('login-----', email + ' ' + password);
 
-    const myHeaders = new Headers();
-    myHeaders.append('Content-Type', 'application/json');
+    let data = {
+      emailId: email.trim(),
+      password: password.trim(),
+    };
 
-    fetch(BASE_URL + LOGIN_USER, {
-      body: JSON.stringify({
-        emailId: email,
-        password: password,
-      }),
-      method: 'POST',
-      headers: myHeaders,
-    })
-      .then(res => res.json())
-      .then(json => {
-        setLoading(false);
-        if (!json.status) {
-          if (json.message == 'Wrong Credential') {
-            setBadPassword(json.message);
-          } else {
-            setBadEmail(json.message);
-          }
-        } else {
-          dispatch(setAuthData(json));
+    let url = BASE_URL + LOGIN_USER;
+    console.log('data', data);
+    // console.log('url', url);
+    axios
+      .post(url, data)
+      .then(res => {
+        console.log('res.data', res?.data);
+        if (res?.data?.data) {
+          setLoading(false);
+          dispatch(setAuthData(res.data));
           navigation.navigate('Main');
           toast('Login Successful');
+        } else {
+          setLoading(false);
+          toast('Login Unsuccessful');
         }
-        console.log('login json--------', json);
       })
       .catch(err => {
+        console.log('login err', err);
+        toast('login err');
         setLoading(false);
-        toast('api login err');
-        console.log(err);
       });
-
-    // let data = {
-    //   emailId: email.trim(),
-    //   password: password.trim(),
-    // };
-
-    // axios
-    //   .post(BASE_URL + LOGIN_USER, data)
-    //   .then(res => {
-    //     if (res?.data) {
-    //       console.log('resp---', res?.data);
-    //       // toast('Login Successful');
-    //       // navigation.navigate('home');
-    //       setLoading(false);
-    //     } else {
-    //       // toast('please enter correct details');
-    //       setLoading(false);
-    //     }
-    //     if (!res.data.status) {
-    //       if (res.data.message == "Wrong password") {
-    //         setBadPassword(res.data.message)
-    //       }else{
-    //         setBadEmail(res.data.message)
-    //       }
-    //     }else{
-    //       dispatch(setAuthData(res.data))
-    //       navigation.navigate('Main');
-    //     }
-    //   })
-    //   .catch(err => {
-    //     toast('api login err');
-    //     setLoading(false);
-    //   });
   };
 
   return (
     <View style={styles.container}>
-      <Image
-        source={require('../images/social_logo.png')}
-        style={styles.logo}
-      />
-      <Text style={[styles.welcomeText1, {marginTop: 25}]}>Welcome Back</Text>
-      <Text style={[styles.welcomeText1, {marginTop: 10}]}>
-        to <Text style={styles.welcomeText2}>Social</Text>
-      </Text>
+      <ScrollView>
+        <Image
+          source={require('../images/social_logo.png')}
+          style={styles.logo}
+        />
+        <Text style={[styles.welcomeText1, {marginTop: 25}]}>Welcome Back</Text>
+        <Text style={[styles.welcomeText1, {marginTop: 10}]}>
+          to <Text style={styles.welcomeText2}>Social</Text>
+        </Text>
 
-      <CustomTextInput
-        placeHolder={'Enter Email'}
-        placeholderTextColor={'#888'}
-        value={email}
-        onChangeText={txt => setEmail(txt)}
-        isValid={badEmail == '' ? true : false}
-      />
-      {badEmail != '' && <Text style={styles.errorText}>{badEmail}</Text>}
+        <CustomTextInput
+          placeHolder={'Enter Email'}
+          placeholderTextColor={'#888'}
+          value={email}
+          onChangeText={txt => setEmail(txt)}
+          isValid={badEmail == '' ? true : false}
+        />
+        {badEmail != '' && <Text style={styles.errorText}>{badEmail}</Text>}
 
-      <CustomTextInput
-        style={{width: '92%', color:"#000"}}
-        placeHolder={'Enter Password'}
-        placeholderTextColor={'#888'}
-        type={hidePass}
-        value={password}
-        onChangeText={txt => setPassword(txt)}
-        isValid={badPassword == '' ? true : false}
-        child2={
-          <TouchableOpacity
-            onPress={() => setHidePass(!hidePass)}
-            // style={{right: 25}}
+        <CustomTextInput
+          style={{width: '92%', color: '#000'}}
+          placeHolder={'Enter Password'}
+          placeholderTextColor={'#888'}
+          type={hidePass}
+          value={password}
+          onChangeText={txt => setPassword(txt)}
+          isValid={badPassword == '' ? true : false}
+          child2={
+            <TouchableOpacity
+              onPress={() => setHidePass(!hidePass)}
+              // style={{right: 25}}
             >
-            {hidePass ? (
-              <Image
-                source={require('../images/eye_close.png')}
-                style={{width: 20, height: 20}}
-              />
-            ) : (
-              <Image
-                source={require('../images/eye.png')}
-                style={{width: 20, height: 20}}
-              />
-            )}
+              {hidePass ? (
+                <Image
+                  source={require('../images/eye_close.png')}
+                  style={{width: 20, height: 20}}
+                />
+              ) : (
+                <Image
+                  source={require('../images/eye.png')}
+                  style={{width: 20, height: 20}}
+                />
+              )}
+            </TouchableOpacity>
+          }
+        />
+        {badPassword != '' && badPassword != 'Wrong password' && (
+          <Text style={styles.errorText}>{badPassword}</Text>
+        )}
+
+        <LinearGradient colors={[THEME_COLOR2, THEME_COLOR]} style={styles.btn}>
+          <TouchableOpacity
+            style={[
+              styles.btn,
+              {justifyContent: 'center', alignItems: 'center', marginTop: 0},
+            ]}
+            onPress={() => {
+              if (validate()) {
+                login();
+              }
+            }}>
+            <Text style={{color: BG_COLOR, fontSize: 17, fontWeight: '600'}}>
+              Login
+            </Text>
           </TouchableOpacity>
-        }
-      />
-      {badPassword != '' && badPassword != 'Wrong password' && (
-        <Text style={styles.errorText}>{badPassword}</Text>
-      )}
+        </LinearGradient>
 
-      <LinearGradient colors={[THEME_COLOR2, THEME_COLOR]} style={styles.btn}>
-        <TouchableOpacity
-          style={[
-            styles.btn,
-            {justifyContent: 'center', alignItems: 'center', marginTop: 0},
-          ]}
+        <Text
+          style={styles.signupText}
           onPress={() => {
-            if (validate()) {
-              login();
-            }
+            navigation.navigate('Signup');
           }}>
-          <Text style={{color: BG_COLOR, fontSize: 17, fontWeight: '600'}}>
-            Login
-          </Text>
-        </TouchableOpacity>
-      </LinearGradient>
-
-      <Text
-        style={styles.signupText}
-        onPress={() => {
-          navigation.navigate('Signup');
-        }}>
-        Create New Account ?{' '}
-        <Text style={{color: THEME_COLOR, fontWeight: '700'}}>Sign Up</Text>
-      </Text>
-      <Loader visible={loading} />
+          Create New Account ?{' '}
+          <Text style={{color: THEME_COLOR, fontWeight: '700'}}>Sign Up</Text>
+        </Text>
+        <Loader visible={loading} />
+      </ScrollView>
     </View>
   );
 };
@@ -280,5 +225,6 @@ const styles = StyleSheet.create({
     marginTop: 30,
     fontWeight: '500',
     color: TEXT_COLOR,
+    marginBottom: 20,
   },
 });

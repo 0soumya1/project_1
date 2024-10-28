@@ -1,4 +1,11 @@
-import {View, Text, StyleSheet, FlatList, BackHandler, Alert} from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  BackHandler,
+  Alert,
+} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {
   BASE_URL,
@@ -32,17 +39,21 @@ const Feeds = () => {
     getProfileData();
   }, [isfocused]);
 
+  // console.log(authData, 'authData feeds');
+  // console.log(authData?.data, 'authDatadata feeds');
+
   useEffect(() => {
     // Function to handle the back button press
     const onBackPress = () => {
       // Show an alert before exiting the app or navigating
       Alert.alert(
-        'Hold on!', 'Are you sure you want to exit the app?',
+        'Hold on!',
+        'Are you sure you want to exit the app?',
         [
-          { text: 'Cancel', style: 'cancel', onPress: () => null },
-          { text: 'Yes', onPress: () => BackHandler.exitApp() }, // Exit the app
+          {text: 'Cancel', style: 'cancel', onPress: () => null},
+          {text: 'Yes', onPress: () => BackHandler.exitApp()}, // Exit the app
         ],
-        { cancelable: false }
+        {cancelable: false},
       );
       return true; // Prevent default behavior (like navigating back)
     };
@@ -70,7 +81,7 @@ const Feeds = () => {
 
   const getProfileData = () => {
     setLoading(true);
-    fetch(BASE_URL + USER_PROFILE + authData.data.data._id)
+    fetch(BASE_URL + USER_PROFILE + authData?.data?.data._id)
       .then(res => res.json())
       .then(json => {
         setLoading(false);
@@ -111,7 +122,7 @@ const Feeds = () => {
       userName: authData.data.data.name,
     });
 
-    fetch(BASE_URL + UPDATE_POST + selectedItem.item._id, {
+    fetch(BASE_URL + UPDATE_POST + selectedItem?.item._id, {
       method: 'PUT',
       body,
       headers: myHeaders,
@@ -255,6 +266,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'white',
-    marginBottom:85,
+    marginBottom: 85,
   },
 });
